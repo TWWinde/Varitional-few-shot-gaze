@@ -246,11 +246,11 @@ def data_normalization_entry(dataset_name, dataset_path, group, i):
 
 if __name__ == '__main__':
     # Grab SFM coordinates and store
-    face_model_fpath = './sfm_face_coordinates.npy'
+    face_model_fpath = ' /projects/tang/few_shot_gaze/preprocess/sfm_face_coordinates.npy'
     face_model_3d_coordinates = np.load(face_model_fpath)
 
     # Preprocess some datasets
-    output_dir = './outputs/'
+    output_dir = '/projects/tang/few_shot_gaze/preprocess/outputs/'
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
     datasets = {
@@ -262,7 +262,7 @@ if __name__ == '__main__':
 
             # A supplementary HDF file with preprocessing data,
             # as provided by us. See grab_prerequisites.bash
-            'supplementary': './MPIIFaceGaze_supplementary.h5',
+            'supplementary': '/projects/tang/few_shot_gaze/preprocess/MPIIFaceGaze_supplementary.h5',
 
             # Desired output path for the produced HDF
             'output-path': output_dir + '/MPIIGaze.h5',
@@ -271,11 +271,11 @@ if __name__ == '__main__':
             # Path to the GazeCapture dataset
             # Sub-folders names should consist of person IDs, for example:
             # 00002, 00028, 00141, ...
-            'input-path': '/media/wookie/WookExt4/datasets/GazeCapture',
+            'input-path': '/datasets/external/gazecapture',
 
             # A supplementary HDF file with preprocessing data,
             # as provided by us. See grab_prerequisites.bash
-            'supplementary': './GazeCapture_supplementary.h5',
+            'supplementary': '/projects/tang/few_shot_gaze/preprocess/GazeCapture_supplementary.h5',
 
             # Desired output path for the produced HDF
             'output-path': output_dir + '/GazeCapture.h5',
