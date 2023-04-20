@@ -246,7 +246,7 @@ def data_normalization_entry(dataset_name, dataset_path, group, i):
 
 if __name__ == '__main__':
     # Grab SFM coordinates and store
-    face_model_fpath = ' /projects/tang/few_shot_gaze/preprocess/sfm_face_coordinates.npy'
+    face_model_fpath = ' /projects/tang/fsg/preprocess/sfm_face_coordinates.npy'
     face_model_3d_coordinates = np.load(face_model_fpath)
 
     # Preprocess some datasets
