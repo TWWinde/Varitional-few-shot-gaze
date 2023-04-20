@@ -254,19 +254,19 @@ if __name__ == '__main__':
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
     datasets = {
-        'MPIIGaze': {
+        #'MPIIGaze': {
             # Path to the MPIIFaceGaze dataset
             # Sub-folders names should consist of person IDs, for example:
             # p00, p01, p02, ...
-            'input-path': '/media/wookie/WookExt4/datasets/MPIIFaceGaze',
+        # 'input-path': '/media/wookie/WookExt4/datasets/MPIIFaceGaze',
 
             # A supplementary HDF file with preprocessing data,
             # as provided by us. See grab_prerequisites.bash
-            'supplementary': '/projects/tang/fsg/preprocess/MPIIFaceGaze_supplementary.h5',
+        # 'supplementary': '/projects/tang/fsg/preprocess/MPIIFaceGaze_supplementary.h5',
 
             # Desired output path for the produced HDF
-            'output-path': output_dir + '/MPIIGaze.h5',
-        },
+        # 'output-path': output_dir + '/MPIIGaze.h5',
+        #},
         'GazeCapture': {
             # Path to the GazeCapture dataset
             # Sub-folders names should consist of person IDs, for example:
