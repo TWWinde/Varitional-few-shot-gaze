@@ -229,7 +229,7 @@ def data_normalization_entry(dataset_name, dataset_path, group, i):
         to_visualize = draw_gaze(to_visualize, (0.5 * ow, 0.75 * oh), n_h,
                                  length=40.0, thickness=1,
                                  color=(255, 255, 255))
-        cv.imshow('normalized_patch', to_visualize)
+        #cv.imshow('normalized_patch', to_visualize)
         cv.waitKey(1)
 
     return {
