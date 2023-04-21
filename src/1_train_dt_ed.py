@@ -85,9 +85,9 @@ parser.add_argument('--distributed', dest = "distributed", action = 'store_true'
 parser.add_argument('--local_rank', default = 0, type = int)
 
 # data
-parser.add_argument('--mpiigaze-file', type=str, default='../preprocess/outputs/MPIIGaze.h5',
+parser.add_argument('--mpiigaze-file', type=str, default='/projects/tang/fsg/preprocess/outputs/MPIIGaze.h5',
                     help='Path to MPIIGaze dataset in HDF format.')
-parser.add_argument('--gazecapture-file', type=str, default='../preprocess/outputs/GazeCapture.h5',
+parser.add_argument('--gazecapture-file', type=str, default='/projects/tang/fsg/preprocess/outputs/GazeCapture.h5',
                     help='Path to GazeCapture dataset in HDF format.')
 parser.add_argument('--test-subsample', type=float, default=1.0,
                     help='proportion of test set to use (default: 1.0)')

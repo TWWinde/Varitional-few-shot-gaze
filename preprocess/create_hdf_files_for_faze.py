@@ -36,8 +36,8 @@ normalized_camera = {
 
 norm_camera_matrix = np.array(
     [
-        [normalized_camera['focal_length'], 0, 0.5*normalized_camera['size'][0]],  # noqa
-        [0, normalized_camera['focal_length'], 0.5*normalized_camera['size'][1]],  # noqa
+        [normalized_camera['focal_length'], 0, 0.5 * normalized_camera['size'][0]],  # noqa
+        [0, normalized_camera['focal_length'], 0.5 * normalized_camera['size'][1]],  # noqa
         [0, 0, 1],
     ],
     dtype=np.float64,
@@ -45,7 +45,6 @@ norm_camera_matrix = np.array(
 
 
 class Undistorter:
-
     _map = None
     _previous_parameters = None
 
@@ -63,8 +62,8 @@ class Undistorter:
                 newCameraMatrix=camera_matrix if is_gazecapture else None,
                 size=(w, h), m1type=cv.CV_32FC1)
             print('fx: %.2f, fy: %.2f, cx: %.2f, cy: %.2f' % (
-                    camera_matrix[0, 0], camera_matrix[1, 1],
-                    camera_matrix[0, 2], camera_matrix[1, 2]))
+                camera_matrix[0, 0], camera_matrix[1, 1],
+                camera_matrix[0, 2], camera_matrix[1, 2]))
             self._previous_parameters = np.copy(all_parameters)
 
         # Apply
@@ -100,9 +99,9 @@ def vector_to_pitchyaw(vectors):
 
 
 def data_normalization(dataset_name, dataset_path, group, output_path):
-
     # Prepare methods to organize per-entry outputs
     to_write = {}
+
     def add(key, value):  # noqa
         if key not in to_write:
             to_write[key] = [value]
@@ -151,7 +150,6 @@ def data_normalization(dataset_name, dataset_path, group, output_path):
 
 
 def data_normalization_entry(dataset_name, dataset_path, group, i):
-
     # Form original camera matrix
     fx, fy, cx, cy = group['camera_parameters'][i, :]
     camera_matrix = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]],
@@ -230,7 +228,7 @@ def data_normalization_entry(dataset_name, dataset_path, group, i):
         to_visualize = draw_gaze(to_visualize, (0.5 * ow, 0.75 * oh), n_h,
                                  length=40.0, thickness=1,
                                  color=(255, 255, 255))
-        #cv.imshow('normalized_patch', to_visualize)
+        # cv.imshow('normalized_patch', to_visualize)
         cv.waitKey(1)
 
     return {
@@ -255,19 +253,19 @@ if __name__ == '__main__':
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
     datasets = {
-        #'MPIIGaze': {
+        'MPIIGaze': {
             # Path to the MPIIFaceGaze dataset
             # Sub-folders names should consist of person IDs, for example:
             # p00, p01, p02, ...
-        # 'input-path': '/media/wookie/WookExt4/datasets/MPIIFaceGaze',
+            'input-path': '/projects/tang/fsg/preprocess/MPIIFaceGaze',
 
             # A supplementary HDF file with preprocessing data,
             # as provided by us. See grab_prerequisites.bash
-        # 'supplementary': '/projects/tang/fsg/preprocess/MPIIFaceGaze_supplementary.h5',
+            'supplementary': '/projects/tang/fsg/preprocess/MPIIFaceGaze_supplementary.h5',
 
             # Desired output path for the produced HDF
-        # 'output-path': output_dir + '/MPIIGaze.h5',
-        #},
+            'output-path': output_dir + '/MPIIGaze.h5',
+        },
         'GazeCapture': {
             # Path to the GazeCapture dataset
             # Sub-folders names should consist of person IDs, for example:
