@@ -109,7 +109,7 @@ def data_normalization(dataset_name, dataset_path, group, output_path):
         else:
             to_write[key].append(value)
 
-    # Iterate through group (person_id)
+    # Iterate through group (person_id) changed
     if group is not None:
         num_entries = next(iter(group.values())).shape[0]
     for i in range(num_entries):
