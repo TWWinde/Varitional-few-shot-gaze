@@ -24,7 +24,7 @@ BATCH_SIZE=64
 # Set the experiment output directory.
 # NOTE: make sure to change this if you do not intend to over-write
 #       previous outputs.
-OUTPUT_DIR="/projects/tang/fsg/outputs_of_full_train_test_and_plot"
+OUTPUT_DIR="/projects/tang/fsg/outputs_of_full_train_test_and_plot/"
 
 
 if [[ $SKIP_DTED_TRAINING -eq 0 ]]

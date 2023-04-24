@@ -97,7 +97,7 @@ parser.add_argument('--num-data-loaders', type=int, default=0, metavar='N',
 # logging
 parser.add_argument('--use-tensorboard', action='store_true', default=False,
                     help='create tensorboard logs (stored in the args.save_path directory)')
-parser.add_argument('--save-path', type=str, default='.',
+parser.add_argument('--save-path', type=str, default='/projects/tang/fsg/src/outputs_of_full_train_test_and_plot/checkpoints/',
                     help='path to save network parameters (default: .)')
 parser.add_argument('--show-warnings', action='store_true', default=False,
                     help='show default Python warnings')
@@ -341,7 +341,7 @@ def worker_init_fn(worker_id):
 
 
 # Load GazeCapture prefixes with train/val/test split spec.
-with open('./gazecapture_split.json', 'r') as f:
+with open('/projects/tang/fsg/src/gazecapture_split.json', 'r') as f:
     all_gc_prefixes = json.load(f)
 
 # Define single training dataset
