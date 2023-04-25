@@ -690,7 +690,7 @@ def execute_training_step(current_step):
             optimizer.zero_grad()
             gaze_optimizer.zero_grad()
 
-            
+
     # Register timing
     time_backward_end = time.time()
     if not args.distributed or args.local_rank == 0:
@@ -812,7 +812,7 @@ for current_step in range(initial_step, num_training_steps):
 
     #####################
     # Visualization loop
-
+    logging.info('Visualization loop')
     # Latent space walks (only store latest results)
     if not args.distributed or args.local_rank == 0:
         if (args.save_image_samples > 0
@@ -825,6 +825,7 @@ for current_step in range(initial_step, num_training_steps):
                 for tag, data_dict in all_data.items():
 
                     def save_images(images, dname, stem):
+                        logging.info('walk starts')
                         dpath = '%s/walks/%s/%s' % (args.save_path, tag, dname)
                         if not os.path.isdir(dpath):
                             os.makedirs(dpath)
@@ -850,6 +851,7 @@ for current_step in range(initial_step, num_training_steps):
                             output_dict = network(adjusted_input)
                             output_images.append(recover_images(output_dict['image_b_hat']))
                         save_images(output_images, 'gaze', spec['name'])
+                        logging.info('save_images')
 
                     for spec in walking_spec:  # Head-pose-walk
                         output_images = []
