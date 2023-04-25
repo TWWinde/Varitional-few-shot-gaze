@@ -679,6 +679,18 @@ def execute_training_step(current_step):
             loss_dict['gaze'].backward()
         gaze_optimizer.step()
 
+
+        # 手动清除梯度，以避免内存泄漏
+        if args.use_apex:
+            for param in amp.master_params(optimizer):
+                param.grad = None
+            for param in amp.master_params(gaze_optimizer):
+                param.grad = None
+        else:
+            optimizer.zero_grad()
+            gaze_optimizer.zero_grad()
+
+            
     # Register timing
     time_backward_end = time.time()
     if not args.distributed or args.local_rank == 0:
