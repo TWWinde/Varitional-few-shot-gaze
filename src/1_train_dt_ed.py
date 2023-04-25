@@ -82,7 +82,7 @@ parser.add_argument('--print-freq-test', type=int, default=5000, metavar='N',
                     help='print test statistics after every N iterations (default: 5000)')
 parser.add_argument('--distributed', dest = "distributed", action = 'store_false',
                     help = 'Use distributed computing in training.')
-parser.add_argument('--local_rank', default = 0, type = int)
+#parser.add_argument('--local_rank', default = 0, type = int)
 
 # data
 parser.add_argument('--mpiigaze-file', type=str, default='/projects/tang/fsg/preprocess/outputs/MPIIGaze.h5',
