@@ -82,7 +82,7 @@ parser.add_argument('--print-freq-test', type=int, default=5000, metavar='N',
                     help='print test statistics after every N iterations (default: 5000)')
 parser.add_argument('--distributed', dest = "distributed", action = 'store_false',
                     help = 'Use distributed computing in training.')
-#parser.add_argument('--local_rank', default = 0, type = int)
+parser.add_argument('--local_rank', default = 0, type = int)
 
 # data
 parser.add_argument('--mpiigaze-file', type=str, default='/projects/tang/fsg/preprocess/outputs/MPIIGaze.h5',
@@ -117,6 +117,7 @@ parser.add_argument('--eval-batch-size', type=int, default=512, metavar='N',
                     help='evaluation batch size (default: 512)')
 
 args = parser.parse_args()
+print(args.distributed)
 
 import h5py
 import numpy as np
@@ -140,7 +141,7 @@ if args.distributed:
     world_size = torch.distributed.get_world_size()
 else:
     world_size = torch.cuda.device_count()
-
+    print('我爱学习')
 import logging
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
