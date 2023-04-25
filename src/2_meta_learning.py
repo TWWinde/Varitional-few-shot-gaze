@@ -591,7 +591,7 @@ if __name__ == '__main__':
 
     # Define and parse configuration for training and evaluations
     parser = argparse.ArgumentParser(description='Meta-learn gaze estimator from RotAE embeddings.')
-    parser.add_argument('input_dir', type=str,default='/projects/tang/fsg/src/outputs_of_full_train_test_and_plot',
+    parser.add_argument('input_dir', type=str, default='/projects/tang/fsg/src/outputs_of_full_train_test_and_plot',
                         help='Input directory for experiment data')
     parser.add_argument('--output-dir', type=str, default='./',
                         help='Output directory for tensorboard log relative to input dir')
