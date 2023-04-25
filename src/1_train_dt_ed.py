@@ -665,9 +665,9 @@ def execute_training_step(current_step):
     # Optimize main objective
     if args.use_apex:
         with amp.scale_loss(loss_to_optimize, optimizer) as scaled_loss:
-            scaled_loss.backward()
+            scaled_loss.backward(retain_graph=True)
     else:
-        loss_to_optimize.backward()
+        loss_to_optimize.backward(retain_graph=True)
     optimizer.step()
 
     # optimize small gaze part too, separately (if required)
