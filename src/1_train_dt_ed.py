@@ -6,7 +6,7 @@
 # Code written by Seonwook Park, Shalini De Mello.
 # --------------------------------------------------------
 
-
+import os
 import argparse
 parser = argparse.ArgumentParser(description='Train DT-ED')
 
@@ -80,9 +80,9 @@ parser.add_argument('--print-freq-train', type=int, default=20, metavar='N',
                     help='print training statistics after every N iterations (default: 20)')
 parser.add_argument('--print-freq-test', type=int, default=5000, metavar='N',
                     help='print test statistics after every N iterations (default: 5000)')
-parser.add_argument('--distributed', dest = "distributed", action = 'store_false',
+parser.add_argument('--distributed', dest = "distributed", action = 'store_true',default='False',
                     help = 'Use distributed computing in training.')
-parser.add_argument('--local_rank', default = 0, type = int)
+parser.add_argument('--local_rank', default = os.environ.get('LOCAL_RANK', 0), type = int)
 
 # data
 parser.add_argument('--mpiigaze-file', type=str, default='/projects/tang/fsg/preprocess/outputs/MPIIGaze.h5',
@@ -117,7 +117,7 @@ parser.add_argument('--eval-batch-size', type=int, default=512, metavar='N',
                     help='evaluation batch size (default: 512)')
 
 args = parser.parse_args()
-print(args.distributed)
+
 
 import h5py
 import numpy as np
