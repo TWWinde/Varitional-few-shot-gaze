@@ -128,12 +128,13 @@ import time
 import os
 
 import moviepy.editor as mpy
-
+import logging
 import torch
 import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
 if args.distributed:
+    logging.info('distributed training ')
     from torch.utils.data.distributed import DistributedSampler
     from torch.nn.parallel import DistributedDataParallel as DDP
     torch.cuda.set_device(args.local_rank)
@@ -141,8 +142,8 @@ if args.distributed:
     world_size = torch.distributed.get_world_size()
 else:
     world_size = torch.cuda.device_count()
-    print('我爱学习')
-import logging
+    logging.info('distributed training closed')
+
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
 from data import HDFDataset
@@ -666,18 +667,18 @@ def execute_training_step(current_step):
     # Optimize main objective
     if args.use_apex:
         with amp.scale_loss(loss_to_optimize, optimizer) as scaled_loss:
-            scaled_loss.backward(retain_graph=True)
+            scaled_loss.backward(create_graph=False)
     else:
-        loss_to_optimize.backward(retain_graph=True)
+        loss_to_optimize.backward(create_graph=False)
     optimizer.step()
 
     # optimize small gaze part too, separately (if required)
     if not args.backprop_gaze_to_encoder:
         if args.use_apex:
             with amp.scale_loss(loss_dict['gaze'], gaze_optimizer) as scaled_loss:
-                scaled_loss.backward()
+                scaled_loss.backward(create_graph=False)
         else:
-            loss_dict['gaze'].backward()
+            loss_dict['gaze'].backward(create_graph=False)
         gaze_optimizer.step()
 
     # Register timing
@@ -801,7 +802,6 @@ for current_step in range(initial_step, num_training_steps):
 
     #####################
     # Visualization loop
-    logging.info('Visualization loop')
     # Latent space walks (only store latest results)
     if not args.distributed or args.local_rank == 0:
         if (args.save_image_samples > 0
