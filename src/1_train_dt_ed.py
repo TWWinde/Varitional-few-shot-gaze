@@ -667,18 +667,18 @@ def execute_training_step(current_step):
     # Optimize main objective
     if args.use_apex:
         with amp.scale_loss(loss_to_optimize, optimizer) as scaled_loss:
-            scaled_loss.backward(create_graph=False)
+            scaled_loss.backward(retain_graph=True)
     else:
-        loss_to_optimize.backward(create_graph=False)
+        loss_to_optimize.backward(retain_graph=True)
     optimizer.step()
 
     # optimize small gaze part too, separately (if required)
     if not args.backprop_gaze_to_encoder:
         if args.use_apex:
             with amp.scale_loss(loss_dict['gaze'], gaze_optimizer) as scaled_loss:
-                scaled_loss.backward(create_graph=False)
+                scaled_loss.backward()
         else:
-            loss_dict['gaze'].backward(create_graph=False)
+            loss_dict['gaze'].backward()
         gaze_optimizer.step()
 
     # Register timing
