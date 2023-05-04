@@ -152,18 +152,32 @@ class DTED(nn.Module):
         self.batch_size = data['image_a'].shape[0]
 
         # Encode input from a
-        (z_a_a, ze1_g_a, ze1_h_a, ze1_before_z_a, _) = self.encode_to_z(data, 'a')
+        (z_a_a, ze1_g_a, ze1_h_a, ze1_before_z_a, z_shape) = self.encode_to_z(data, 'a')
 
         #############
         print(self.encode_to_z(data, 'a'))
 
         def save_output_to_txt(output, file_path):
-            with open(file_path, "w") as f:
+            with open(file_path, "a") as f:
                 for item in output:
                     f.write(f"{item}\n")
 
         file_path = "/projects/tang/fsg/src/output_z.txt"
-        save_output_to_txt(self.encode_to_z(data, 'a'), file_path)
+        save_output_to_txt('#####################z_apparence#####################', file_path)
+        save_output_to_txt(z_a_a, file_path)
+        save_output_to_txt(ze1_g_a.shape, file_path)
+        save_output_to_txt('#####################z_gaze#####################', file_path)
+        save_output_to_txt(ze1_g_a, file_path)
+        save_output_to_txt(ze1_g_a.shape, file_path)
+        save_output_to_txt('#####################z_head#####################', file_path)
+        save_output_to_txt(ze1_h_a, file_path)
+        save_output_to_txt(ze1_h_a.shape, file_path)
+        save_output_to_txt('#####################z_all#####################', file_path)
+        save_output_to_txt(ze1_h_a, file_path)
+        save_output_to_txt(z_shape, file_path)
+
+        
+
         ########
         if not is_inference_time:
             z_a_b, ze1_g_b, ze1_h_b, _, _ = self.encode_to_z(data, 'b')
