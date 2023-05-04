@@ -84,6 +84,7 @@ class DTED(nn.Module):
         self.gaze1 = self.linear(num_input_neurons, self.gaze_hidden_layer_neurons)
         self.gaze2 = self.linear(self.gaze_hidden_layer_neurons, 3)
 
+    # define dense layer and init them
     def linear(self, f_in, f_out):
         fc = nn.Linear(f_in, f_out)
         nn.init.kaiming_normal(fc.weight.data)
@@ -106,6 +107,7 @@ class DTED(nn.Module):
             rotate_mat = data[key_stem + '_' + fr]
         return torch.matmul(code, rotate_mat)
 
+    # get latent variables
     def encode_to_z(self, data, suffix):
         x = self.encoder(data['image_' + suffix])
         enc_output_shape = x.shape
@@ -121,6 +123,7 @@ class DTED(nn.Module):
 
         z_gaze_enc = z_gaze_enc.view(self.batch_size, -1, 3)
         z_head_enc = z_head_enc.view(self.batch_size, -1, 3)
+
         return [z_app, z_gaze_enc, z_head_enc, x, enc_output_shape]
 
     def decode_to_image(self, codes):
@@ -150,6 +153,18 @@ class DTED(nn.Module):
 
         # Encode input from a
         (z_a_a, ze1_g_a, ze1_h_a, ze1_before_z_a, _) = self.encode_to_z(data, 'a')
+
+        #############
+        print(self.encode_to_z(data, 'a'))
+
+        def save_output_to_txt(output, file_path):
+            with open(file_path, "w") as f:
+                for item in output:
+                    f.write(f"{item}\n")
+
+        file_path = "/projects/tang/fsg/src/output_z.txt"
+        save_output_to_txt(self.encode_to_z(data, 'a'), file_path)
+        ########
         if not is_inference_time:
             z_a_b, ze1_g_b, ze1_h_b, _, _ = self.encode_to_z(data, 'b')
 
