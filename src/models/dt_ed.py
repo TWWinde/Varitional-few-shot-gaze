@@ -155,7 +155,6 @@ class DTED(nn.Module):
         (z_a_a, ze1_g_a, ze1_h_a, ze1_before_z_a, z_shape) = self.encode_to_z(data, 'a')
 
         #############
-        print(self.encode_to_z(data, 'a'))
 
         def save_output_to_txt(output, file_path):
             with open(file_path, "a") as f:
