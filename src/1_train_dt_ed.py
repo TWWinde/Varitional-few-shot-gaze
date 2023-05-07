@@ -8,6 +8,7 @@
 
 import os
 import argparse
+
 parser = argparse.ArgumentParser(description='Train DT-ED')
 
 # architecture specification
@@ -40,6 +41,9 @@ parser.add_argument('--all-equal-embeddings', action='store_true',
 parser.add_argument('--embedding-consistency-loss-type',
                     choices=['angular', 'euclidean'], default=None,
                     help='Apply embedding_consistency loss with selected distance metric')
+parser.add_argument('--reconstruction-loss-type',
+                    choices=['ReconstructionL1Loss', 'AlexLoss', 'VggLoss'], default=None,
+                    help='Apply reconstruction loss with selected types')
 parser.add_argument('--embedding-consistency-loss-warmup-samples',
                     type=int, default=1000000,
                     help='Start from 0.0 and warm up embedding consistency loss until n samples')
@@ -80,9 +84,9 @@ parser.add_argument('--print-freq-train', type=int, default=20, metavar='N',
                     help='print training statistics after every N iterations (default: 20)')
 parser.add_argument('--print-freq-test', type=int, default=5000, metavar='N',
                     help='print test statistics after every N iterations (default: 5000)')
-parser.add_argument('--distributed', dest = "distributed", action = 'store_true',default='False',
-                    help = 'Use distributed computing in training.')
-parser.add_argument('--local_rank', default = os.environ.get('LOCAL_RANK', 0), type = int)
+parser.add_argument('--distributed', dest="distributed", action='store_true', default='False',
+                    help='Use distributed computing in training.')
+parser.add_argument('--local_rank', default=os.environ.get('LOCAL_RANK', 0), type=int)
 
 # data
 parser.add_argument('--mpiigaze-file', type=str, default='/projects/tang/fsg/preprocess/outputs/MPIIGaze.h5',
@@ -97,7 +101,8 @@ parser.add_argument('--num-data-loaders', type=int, default=0, metavar='N',
 # logging
 parser.add_argument('--use-tensorboard', action='store_true', default=False,
                     help='create tensorboard logs (stored in the args.save_path directory)')
-parser.add_argument('--save-path', type=str, default='/projects/tang/fsg/src/outputs_of_full_train_test_and_plot/checkpoints/',
+parser.add_argument('--save-path', type=str, default='/projects/tang/fsg/src/outputs_of_full_train_test_and_plot'
+                                                     '/checkpoints/',
                     help='path to save network parameters (default: .)')
 parser.add_argument('--show-warnings', action='store_true', default=False,
                     help='show default Python warnings')
@@ -118,7 +123,6 @@ parser.add_argument('--eval-batch-size', type=int, default=512, metavar='N',
 
 args = parser.parse_args()
 
-
 import h5py
 import numpy as np
 from collections import OrderedDict
@@ -133,12 +137,14 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
+
 if args.distributed:
     logging.info('distributed training ')
     from torch.utils.data.distributed import DistributedSampler
     from torch.nn.parallel import DistributedDataParallel as DDP
+
     torch.cuda.set_device(args.local_rank)
-    torch.distributed.init_process_group(backend = 'nccl', init_method = 'env://')
+    torch.distributed.init_process_group(backend='nccl', init_method='env://')
     world_size = torch.distributed.get_world_size()
 else:
     world_size = torch.cuda.device_count()
@@ -157,6 +163,7 @@ else:
 # Ignore warnings
 if not args.show_warnings:
     import warnings
+
     warnings.filterwarnings('ignore')
 
 #############################
@@ -171,7 +178,7 @@ if (args.triplet_loss_type == 'angular'
         or args.embedding_consistency_loss_type == 'angular'):
     assert args.normalize_3d_codes is True
 elif (args.triplet_loss_type == 'euclidean'
-        or args.embedding_consistency_loss_type == 'euclidean'):
+      or args.embedding_consistency_loss_type == 'euclidean'):
     assert args.normalize_3d_codes is False
 
 
@@ -220,6 +227,7 @@ def update_learning_rate(current_step):
 ################################################
 # Create network
 from models import DTED
+
 network = DTED(
     growth_rate=args.densenet_growthrate,
     z_dim_app=args.z_dim_app,
@@ -232,8 +240,8 @@ network = DTED(
     backprop_gaze_to_encoder=args.backprop_gaze_to_encoder,
 )
 if args.distributed:
-        if args.local_rank == 0:
-            logging.info(network)
+    if args.local_rank == 0:
+        logging.info(network)
 else:
     logging.info(network)
 
@@ -248,6 +256,7 @@ else:
 # Build optimizers
 if args.use_apex:
     from apex.optimizers import FusedSGD
+
     SGD = FusedSGD
 else:
     SGD = optim.SGD
@@ -281,6 +290,7 @@ else:
 # Wrap optimizer instances with AMP
 if args.use_apex:
     from apex import amp
+
     optimizers = ([optimizer]
                   if args.backprop_gaze_to_encoder
                   else [optimizer, gaze_optimizer])
@@ -301,7 +311,7 @@ if args.distributed:
     if args.local_rank == 0:
         logging.info('Using %d GPUs! with DDP' % world_size)
         seed = np.random.randint(1e4)
-        seed = (seed + torch.distributed.get_rank()) % 2**32
+        seed = (seed + torch.distributed.get_rank()) % 2 ** 32
 else:
     if torch.cuda.device_count() > 1:
         network = nn.DataParallel(network)
@@ -309,11 +319,17 @@ else:
 
 ################################################
 # Define loss functions
-from losses import (ReconstructionL1Loss, GazeAngularLoss, BatchHardTripletLoss,
+from losses import (ReconstructionL1Loss, AlexLoss, VggLoss, GazeAngularLoss, BatchHardTripletLoss,
                     AllFrontalsEqualLoss, EmbeddingConsistencyLoss)
 
 loss_functions = OrderedDict()
-loss_functions['recon_l1'] = ReconstructionL1Loss(suffix='b')
+if args.reconstruction_loss_type == 'ReconstructionL1Loss':
+    loss_functions['recon_l1'] = ReconstructionL1Loss(suffix='b')
+elif args.reconstruction_loss_type == 'AlexLoss':
+    loss_functions['alexloss'] = AlexLoss(suffix='b')
+elif args.reconstruction_loss_type == 'VggLoss':
+    loss_functions['vggloss'] = VggLoss(suffix='b')
+
 loss_functions['gaze'] = GazeAngularLoss()
 
 if args.triplet_loss_type is not None:
@@ -480,7 +496,7 @@ def R_x(theta):
         [1., 0., 0.],
         [0., cos_, -sin_],
         [0., sin_, cos_]
-    ]). astype(np.float32)
+    ]).astype(np.float32)
 
 
 def R_y(phi):
@@ -490,7 +506,7 @@ def R_y(phi):
         [cos_, 0., sin_],
         [0., 1., 0.],
         [-sin_, 0., cos_]
-    ]). astype(np.float32)
+    ]).astype(np.float32)
 
 
 walking_spec = []
@@ -534,8 +550,10 @@ def recover_images(x):
 # Load weights if available
 
 from checkpoints_manager import CheckpointsManager
+
 saver = CheckpointsManager(network, args.save_path)
 initial_step = saver.load_last_checkpoint(args.local_rank)
+
 
 ######################
 # Training step update
@@ -563,11 +581,13 @@ class RunningStatistics(object):
 time_epoch_start = None
 num_elapsed_epochs = 0
 
+
 def reduce_loss(loss):
     loss_clone = loss.clone()
-    torch.distributed.all_reduce(loss_clone, op = torch.distributed.ReduceOp.SUM)
+    torch.distributed.all_reduce(loss_clone, op=torch.distributed.ReduceOp.SUM)
     avg_loss = loss_clone / world_size
     return avg_loss
+
 
 def execute_training_step(current_step):
     global train_data_iterator, time_epoch_start, num_elapsed_epochs
@@ -587,7 +607,7 @@ def execute_training_step(current_step):
         time_epoch_diff = time_epoch_end - time_epoch_start
         if not args.distributed or args.local_rank == 0:
             if args.use_tensorboard:
-                    tensorboard.add_scalar('timing/epoch', time_epoch_diff, num_elapsed_epochs)
+                tensorboard.add_scalar('timing/epoch', time_epoch_diff, num_elapsed_epochs)
 
         # Done with an epoch now...!
         if num_elapsed_epochs % 5 == 0:
@@ -630,7 +650,13 @@ def execute_training_step(current_step):
             loss_dict[key] = value
 
     # Construct main loss
-    loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1']
+    if args.reconstruction_loss_type == 'ReconstructionL1Loss':
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1']
+    elif args.reconstruction_loss_type == 'AlexLoss':
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['alexloss']
+    elif args.reconstruction_loss_type == 'VggLoss':
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['vggloss']
+
     if args.triplet_loss_type is not None:
         triplet_losses = []
         triplet_losses = [
@@ -735,9 +761,9 @@ else:
         logging.info('Training')
         if args.use_tensorboard:
             from tensorboardX import SummaryWriter
+
             tensorboard = SummaryWriter(log_dir=args.save_path)
     last_training_step = num_training_steps - 1
-
 
 train_data_iterator = iter(train_dataloader)
 if not args.distributed or args.local_rank == 0:
@@ -754,9 +780,9 @@ for current_step in range(initial_step, num_training_steps):
         if not args.distributed or args.local_rank == 0:
             running_loss_means = running_losses.means()
             logging.info('Losses at [%7d]: %s' %
-                             (current_step + 1,
-                              ', '.join(['%s: %.5f' % v
-                                         for v in running_loss_means.items()])))
+                         (current_step + 1,
+                          ', '.join(['%s: %.5f' % v
+                                     for v in running_loss_means.items()])))
             if args.use_tensorboard:
                 tensorboard.add_scalar('train_lr', conv1_wt_lr, current_step + 1)
                 for k, v in running_loss_means.items():
@@ -767,17 +793,17 @@ for current_step in range(initial_step, num_training_steps):
     if current_step % 100 == 99:
         if not args.distributed or args.local_rank == 0:
             if args.use_tensorboard:
-                    for k, v in running_timings.means().items():
-                        tensorboard.add_scalar('timing/' + k, v, current_step + 1)
+                for k, v in running_timings.means().items():
+                    tensorboard.add_scalar('timing/' + k, v, current_step + 1)
             running_timings.reset()
 
     # print some memory statistics
     if current_step % 5000 == 0:
         if args.distributed:
             bytes = (torch.cuda.memory_allocated(device=args.local_rank)
-                 + torch.cuda.memory_cached(device=args.local_rank))
+                     + torch.cuda.memory_cached(device=args.local_rank))
             logging.info('GPU %d: probably allocated approximately %.2f GB' %
-                (args.local_rank, bytes / 1e9))
+                         (args.local_rank, bytes / 1e9))
         else:
             for i in range(torch.cuda.device_count()):
                 bytes = (torch.cuda.memory_allocated(device=i)
@@ -805,9 +831,9 @@ for current_step in range(initial_step, num_training_steps):
     # Latent space walks (only store latest results)
     if not args.distributed or args.local_rank == 0:
         if (args.save_image_samples > 0
-            and (current_step % args.save_freq_images
-                 == (args.save_freq_images - 1)
-                 or current_step == last_training_step)):
+                and (current_step % args.save_freq_images
+                     == (args.save_freq_images - 1)
+                     or current_step == last_training_step)):
             network.eval()
             torch.cuda.empty_cache()
             with torch.no_grad():
@@ -828,6 +854,7 @@ for current_step in range(initial_step, num_training_steps):
                             clip.write_videofile('%s/%04d_%s.mp4' % (dpath, i, stem),
                                                  audio=False, threads=8,
                                                  logger=None, verbose=False)
+
 
                     for spec in walking_spec:  # Gaze-direction-walk
                         output_images = []
@@ -920,6 +947,7 @@ if args.generate_predictions:
             os.makedirs(ofdir)
         h5f = h5py.File(ofpath, 'w')
 
+
         def store_person_predictions():
             global current_person_data
             if len(current_person_data) > 0:
@@ -927,6 +955,8 @@ if args.generate_predictions:
                 for key, data in current_person_data.items():
                     g.create_dataset(key, data=data, dtype=np.float32)
             current_person_data = {}
+
+
         with torch.no_grad():
             np.random.seed()
             num_batches = int(np.ceil(len(data_dict['dataset']) / args.eval_batch_size))

@@ -10,9 +10,9 @@ from .all_frontals_equal import AllFrontalsEqualLoss
 from .batch_hard_triplet import BatchHardTripletLoss
 from .gaze_angular import GazeAngularLoss
 from .gaze_mse import GazeMSELoss
-from .reconstruction_l1 import ReconstructionL1Loss
+from .reconstruction_l1 import ReconstructionL1Loss, AlexLoss, VggLoss
 from .embedding_consistency import EmbeddingConsistencyLoss
 
 __all__ = ('AllFrontalsEqualLoss', 'BatchHardTripletLoss',
            'GazeAngularLoss', 'GazeMSELoss',
-           'ReconstructionL1Loss', 'EmbeddingConsistencyLoss')
+           'ReconstructionL1Loss', 'AlexLoss', 'VggLoss', 'EmbeddingConsistencyLoss')

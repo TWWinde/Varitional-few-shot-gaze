@@ -50,6 +50,7 @@ then
 		\
 		--normalize-3d-codes \
 		--embedding-consistency-loss-type angular \
+		--reconstruction-loss-type AlexLoss \
 		--backprop-gaze-to-encoder \
 		\
 		--num-data-loaders 16 \
