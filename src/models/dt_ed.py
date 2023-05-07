@@ -154,28 +154,26 @@ class DTED(nn.Module):
         # Encode input from a
         (z_a_a, ze1_g_a, ze1_h_a, ze1_before_z_a, z_shape) = self.encode_to_z(data, 'a')
 
-        #############
+        #############output of latent space
 
-        def save_output_to_txt(output, file_path):
-            with open(file_path, "a") as f:
-                for item in output:
-                    f.write(f"{item}\n")
+        # def save_output_to_txt(output, file_path):
+        #    with open(file_path, "a") as f:
+        #        for item in output:
+        #            f.write(f"{item}\n")
 
-        file_path = "/projects/tang/fsg/src/output_z.txt"
-        save_output_to_txt('#####################z_apparence#####################', file_path)
-        save_output_to_txt(z_a_a, file_path)
-        save_output_to_txt(z_a_a.shape, file_path)
-        save_output_to_txt('#####################z_gaze#####################', file_path)
-        save_output_to_txt(ze1_g_a, file_path)
-        save_output_to_txt(ze1_g_a.shape, file_path)
-        save_output_to_txt('#####################z_head#####################', file_path)
-        save_output_to_txt(ze1_h_a, file_path)
-        save_output_to_txt(ze1_h_a.shape, file_path)
-        save_output_to_txt('#####################z_all#####################', file_path)
-        save_output_to_txt(ze1_before_z_a, file_path)
-        save_output_to_txt(z_shape, file_path)
-
-        
+        # file_path = "/projects/tang/fsg/src/output_z.txt"
+        # save_output_to_txt('#####################z_apparence#####################', file_path)
+        # save_output_to_txt(z_a_a, file_path)
+        # save_output_to_txt(z_a_a.shape, file_path)
+        # save_output_to_txt('#####################z_gaze#####################', file_path)
+        # save_output_to_txt(ze1_g_a, file_path)
+        # save_output_to_txt(ze1_g_a.shape, file_path)
+        # save_output_to_txt('#####################z_head#####################', file_path)
+        # save_output_to_txt(ze1_h_a, file_path)
+        # save_output_to_txt(ze1_h_a.shape, file_path)
+        # save_output_to_txt('#####################z_all#####################', file_path)
+        # save_output_to_txt(ze1_before_z_a, file_path)
+        # save_output_to_txt(z_shape, file_path)
 
         ########
         if not is_inference_time:
