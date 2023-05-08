@@ -59,7 +59,7 @@ then
 		--use-tensorboard \
 		--save-path ${OUTPUT_DIR} \
         "
-    # eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --distributed; "
+    eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --distributed; "
     eval "python3 $TRAIN_CMD --skip-training --generate-predictions; "
 
 

@@ -86,7 +86,7 @@ parser.add_argument('--print-freq-test', type=int, default=5000, metavar='N',
                     help='print test statistics after every N iterations (default: 5000)')
 parser.add_argument('--distributed', dest="distributed", action='store_true', default='False',
                     help='Use distributed computing in training.')
-parser.add_argument('--local_rank', default=os.environ.get('LOCAL_RANK', 0), type=int)
+parser.add_argument('--local_rank', default=0, type=int)
 
 # data
 parser.add_argument('--mpiigaze-file', type=str, default='/projects/tang/fsg/preprocess/outputs/MPIIGaze.h5',
@@ -829,6 +829,7 @@ for current_step in range(initial_step, num_training_steps):
     #####################
     # Visualization loop
     # Latent space walks (only store latest results)
+    logging.info('Visualization loop')
     if not args.distributed or args.local_rank == 0:
         if (args.save_image_samples > 0
                 and (current_step % args.save_freq_images
