@@ -19,7 +19,7 @@ GAZECAPTURE_FILE="/projects/tang/fsg/preprocess/outputs/GazeCapture.h5"
 
 # This batch size should fit a 11GB single GPU
 # The original training used 8x Tesla V100 GPUs.
-BATCH_SIZE=64
+BATCH_SIZE=48
 
 # Set the experiment output directory.
 # NOTE: make sure to change this if you do not intend to over-write
