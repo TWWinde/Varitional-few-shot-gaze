@@ -47,6 +47,7 @@ then
 		--num-training-epochs 20 \
 		--batch-size $BATCH_SIZE \
 		--eval-batch-size 1024 \
+		--local-rank 0 \
 		\
 		--normalize-3d-codes \
 		--embedding-consistency-loss-type angular \
