@@ -47,7 +47,6 @@ then
 		--num-training-epochs 20 \
 		--batch-size $BATCH_SIZE \
 		--eval-batch-size 1024 \
-		--local-rank 0 \
 		\
 		--normalize-3d-codes \
 		--embedding-consistency-loss-type angular \
@@ -60,7 +59,7 @@ then
 		--use-tensorboard \
 		--save-path ${OUTPUT_DIR} \
         "
-    eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --distributed; "
+    eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --distributed ; "
     eval "python3 $TRAIN_CMD --skip-training --generate-predictions; "
 
 

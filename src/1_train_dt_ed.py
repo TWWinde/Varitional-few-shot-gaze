@@ -691,20 +691,44 @@ def execute_training_step(current_step):
     update_learning_rate(current_step)
 
     # Optimize main objective
+
     if args.use_apex:
         with amp.scale_loss(loss_to_optimize, optimizer) as scaled_loss:
-            scaled_loss.backward(retain_graph=True)
+            optimizer.zero_grad()
+            scaled_loss.backward()
+            for p in network.parameters():
+                if p.grad is not None:
+                    p.grad.detach_()
+                    p.grad.zero_()
+
     else:
-        loss_to_optimize.backward(retain_graph=True)
+        optimizer.zero_grad()
+        loss_to_optimize.backward()
+        for p in network.parameters():
+            if p.grad is not None:
+                p.grad.detach_()
+                p.grad.zero_()
+
     optimizer.step()
 
     # optimize small gaze part too, separately (if required)
     if not args.backprop_gaze_to_encoder:
         if args.use_apex:
             with amp.scale_loss(loss_dict['gaze'], gaze_optimizer) as scaled_loss:
+                optimizer.zero_grad()
                 scaled_loss.backward()
+                for p in network.parameters():
+                    if p.grad is not None:
+                        p.grad.detach_()
+                        p.grad.zero_()
         else:
+            optimizer.zero_grad()
             loss_dict['gaze'].backward()
+            for p in network.parameters():
+                if p.grad is not None:
+                    p.grad.detach_()
+                    p.grad.zero_()
+
         gaze_optimizer.step()
 
     # Register timing
