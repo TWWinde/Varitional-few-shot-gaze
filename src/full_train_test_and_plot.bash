@@ -19,7 +19,7 @@ GAZECAPTURE_FILE="/projects/tang/fsg/preprocess/outputs/GazeCapture.h5"
 
 # This batch size should fit a 11GB single GPU
 # The original training used 8x Tesla V100 GPUs.
-BATCH_SIZE=48
+BATCH_SIZE=64
 
 # Set the experiment output directory.
 # NOTE: make sure to change this if you do not intend to over-write
@@ -59,13 +59,13 @@ then
 		--use-tensorboard \
 		--save-path ${OUTPUT_DIR} \
         "
-    eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --distributed ; "
+    eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD  ; "
     eval "python3 $TRAIN_CMD --skip-training --generate-predictions; "
 
 
 		#####################################################################################
 		# NOTE: when adding the lines below, make sure to use the backslash ( \ ) correctly,
-		#       such that the full command is correctly constructed and registered.
+		#       such that the full command is correctly constructed and registered.--distributed
 
 		# Use (append to above) the line below if wanting to use pre-trained weights, and skip training
 		# DO NOT JUST UNCOMMENT IT, IT WILL HAVE NO EFFECT DUE TO BASH PARSING
