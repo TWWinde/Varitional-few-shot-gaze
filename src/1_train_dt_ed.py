@@ -139,7 +139,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
 
 if args.distributed:
-    logging.info('distributed training ')
+    print('distributed training ')
     from torch.utils.data.distributed import DistributedSampler
     from torch.nn.parallel import DistributedDataParallel as DDP
 
@@ -148,7 +148,7 @@ if args.distributed:
     world_size = torch.distributed.get_world_size()
 else:
     world_size = torch.cuda.device_count()
-    logging.info('distributed training closed')
+    print('distributed training closed')
 
 logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
@@ -775,7 +775,7 @@ def execute_test(tag, data_dict):
 
 
 ############
-# Main loop
+# Main loop 上边全都是在定义函数准备网络加载数据
 
 num_training_steps = int(args.num_training_epochs * len(train_dataset) / batch_size_global)
 if args.skip_training:

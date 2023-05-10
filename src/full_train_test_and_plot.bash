@@ -59,13 +59,13 @@ then
 		--use-tensorboard \
 		--save-path ${OUTPUT_DIR} \
         "
-    eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD  ; "
+    eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --distributed --local_rank=0; "
     eval "python3 $TRAIN_CMD --skip-training --generate-predictions; "
 
 
 		#####################################################################################
 		# NOTE: when adding the lines below, make sure to use the backslash ( \ ) correctly,
-		#       such that the full command is correctly constructed and registered.--distributed
+		#       such that the full command is correctly constructed and registered.
 
 		# Use (append to above) the line below if wanting to use pre-trained weights, and skip training
 		# DO NOT JUST UNCOMMENT IT, IT WILL HAVE NO EFFECT DUE TO BASH PARSING
