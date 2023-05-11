@@ -50,7 +50,7 @@ then
 		\
 		--normalize-3d-codes \
 		--embedding-consistency-loss-type angular \
-		--reconstruction-loss-type AlexLoss \
+		--reconstruction-loss-type VggLoss \
 		--backprop-gaze-to-encoder \
 		\
 		--num-data-loaders 16 \
@@ -60,7 +60,7 @@ then
 		--save-path ${OUTPUT_DIR} \
         "
     eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --distributed --local_rank=0; "
-    eval "python3 $TRAIN_CMD --skip-training --generate-predictions; "
+    eval "python3 $TRAIN_CMD --local_rank=0 --skip-training --generate-predictions; "
 
 
 		#####################################################################################
