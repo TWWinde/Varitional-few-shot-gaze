@@ -251,7 +251,7 @@ class DenseNetEncoder(nn.Module):
         self.initial = DenseNetInitialLayers(growth_rate=growth_rate,
                                              activation_fn=activation_fn,
                                              normalization_fn=normalization_fn)
-        c_now = list(self.children())[-1].c_now
+        c_now = list(self.children())[-1].c_now  # 获取当前子模块的输出通道数
         self.c_at_end_of_each_scale += list(self.children())[-1].c_list
 
         assert (num_layers_per_block % 2) == 0
@@ -269,7 +269,7 @@ class DenseNetEncoder(nn.Module):
             c_now = list(self.children())[-1].c_now
             self.c_at_end_of_each_scale.append(c_now)
 
-            # Define transition block if not last layer
+            # Define transition block if not last layer down sampling
             if i < (num_blocks - 1):
                 self.add_module('trans%d' % i_, DenseNetTransitionDown(
                     c_now, p_dropout=p_dropout,
@@ -280,13 +280,14 @@ class DenseNetEncoder(nn.Module):
                 c_now = list(self.children())[-1].c_now
             self.c_now = c_now
 
-    def forward(self, x):
+    def forward(self, x):  # change this function to get mu, logvar
         # Apply initial layers and dense blocks
         for name, module in self.named_children():
             if name == 'initial':
                 x, prev_scale_x = module(x)
             else:
                 x = module(x)
+
         return x
 
 

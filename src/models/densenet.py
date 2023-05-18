@@ -13,7 +13,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class DenseNet(nn.Module):
-
     p_dropout = 0.0  # DON'T use this
 
     num_blocks = 4
@@ -94,7 +93,7 @@ class DenseNetInitialLayers(nn.Module):
     def __init__(self, growth_rate=8, activation_fn=nn.ReLU,
                  normalization_fn=nn.BatchNorm2d):
         super(DenseNetInitialLayers, self).__init__()
-        c_next = 2 * growth_rate
+        c_next = 2 * growth_rate   # #channels of output
         self.conv1 = nn.Conv2d(3, c_next, bias=False,
                                kernel_size=3, stride=2, padding=1)
         nn.init.kaiming_normal_(self.conv1.weight.data)
@@ -110,6 +109,7 @@ class DenseNetInitialLayers(nn.Module):
         self.c_now = c_out
         self.c_list = [c_next, c_out]
 
+    # two times convolution
     def forward(self, x):
         x = self.conv1(x)
         x = self.norm(x)
@@ -188,7 +188,7 @@ class DenseNetCompositeLayer(nn.Module):
         self.act = activation_fn(inplace=True)
         if transposed:
             assert kernel_size > 1
-            self.conv = nn.ConvTranspose2d(c_in, c_out, kernel_size=kernel_size,
+            self.conv = nn.ConvTranspose2d(c_in, c_out, kernel_size=kernel_size,  # up sampling
                                            padding=1 if kernel_size > 1 else 0,
                                            stride=1, bias=False).to(device)
         else:
