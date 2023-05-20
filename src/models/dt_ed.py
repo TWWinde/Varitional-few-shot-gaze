@@ -25,7 +25,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class DTED(nn.Module):
 
-    def __init__(self, z_dim_app, z_dim_gaze, z_dim_head,
+    def __init__(self, z_dim, z_dim_app, z_dim_gaze, z_dim_head,
                  growth_rate=32, activation_fn=nn.LeakyReLU,
                  normalization_fn=nn.InstanceNorm2d,
                  decoder_input_c=16,
@@ -34,7 +34,7 @@ class DTED(nn.Module):
                  use_triplet=False,
                  gaze_hidden_layer_neurons=64,
                  backprop_gaze_to_encoder=False,
-                 ):
+                 ):  # add z-dim
         super(DTED, self).__init__()
 
         # Cache some specific configurations
@@ -74,6 +74,10 @@ class DTED(nn.Module):
         self.z_dim_gaze = z_dim_gaze
         self.z_dim_head = z_dim_head
         z_num_all = 3 * (z_dim_gaze + z_dim_head) + z_dim_app
+        # The latent code parts for mu and logvar
+        self.z_dim = z_dim  # dimension of mu and logvar
+        self.dense_enc = self.linear(c_now, 2 * z_dim)
+        self.dense_dec = self.linear(z_dim, z_num_all)
 
         self.fc_enc = self.linear(c_now, z_num_all)
         self.fc_dec = self.linear(z_num_all, enc_num_all)
@@ -108,23 +112,38 @@ class DTED(nn.Module):
         return torch.matmul(code, rotate_mat)
 
     # get latent variables
-    def encode_to_z(self, data, suffix):
+    #####################
+    def encode_to_distribution(self, data, suffix):
         x = self.encoder(data['image_' + suffix])
-        enc_output_shape = x.shape
-        x = x.mean(-1).mean(-1)  # Global-Average Pooling
+        x = F.adaptive_avg_pool2d(x, 1)  # Global-Average Pooling
+        x = x.view(x.size(0), -1)
+        x = self.dense_dec(x)
+        mu = x[:, :self.z_dim]
+        logvar = x[:, self.z_dim:]
+        return mu, logvar
+
+    def reparameterize(mean, logvar):
+        std = torch.exp(logvar / 2)
+        epsilon = torch.randn_like(std)
+        z = epsilon * std + mean
+        return z
+
+    ##########################
+    def encode_to_z(self, z):
 
         # Create latent codes
-        z_all = self.fc_enc(x)
+        z_all = self.dense_dec(z)
+        z_shape = z_all.dim()
         z_app = z_all[:, :self.z_dim_app]
         z_all = z_all[:, self.z_dim_app:]
-        z_all = z_all.view(self.batch_size, -1, 3)
+        z_all = z_all.view(self.batch_size, -1, 3)  # change the dimension to 3
         z_gaze_enc = z_all[:, :self.z_dim_gaze, :]
         z_head_enc = z_all[:, self.z_dim_gaze:, :]
 
         z_gaze_enc = z_gaze_enc.view(self.batch_size, -1, 3)
         z_head_enc = z_head_enc.view(self.batch_size, -1, 3)
 
-        return [z_app, z_gaze_enc, z_head_enc, x, enc_output_shape]
+        return [z_app, z_gaze_enc, z_head_enc, z_shape]
 
     def decode_to_image(self, codes):
         z_all = torch.cat([code.view(self.batch_size, -1) for code in codes], dim=1)
@@ -151,33 +170,13 @@ class DTED(nn.Module):
         is_inference_time = ('image_b' not in data)
         self.batch_size = data['image_a'].shape[0]
 
-        # Encode input from a
-        (z_a_a, ze1_g_a, ze1_h_a, ze1_before_z_a, z_shape) = self.encode_to_z(data, 'a')
-
-        #############output of latent space
-
-        # def save_output_to_txt(output, file_path):
-        #    with open(file_path, "a") as f:
-        #        for item in output:
-        #            f.write(f"{item}\n")
-
-        # file_path = "/projects/tang/fsg/src/output_z.txt"
-        # save_output_to_txt('#####################z_apparence#####################', file_path)
-        # save_output_to_txt(z_a_a, file_path)
-        # save_output_to_txt(z_a_a.shape, file_path)
-        # save_output_to_txt('#####################z_gaze#####################', file_path)
-        # save_output_to_txt(ze1_g_a, file_path)
-        # save_output_to_txt(ze1_g_a.shape, file_path)
-        # save_output_to_txt('#####################z_head#####################', file_path)
-        # save_output_to_txt(ze1_h_a, file_path)
-        # save_output_to_txt(ze1_h_a.shape, file_path)
-        # save_output_to_txt('#####################z_all#####################', file_path)
-        # save_output_to_txt(ze1_before_z_a, file_path)
-        # save_output_to_txt(z_shape, file_path)
-
-        ########
+        # Encode input to get mu logvar and sample from distribution to get z
+        mu, logvar = self.encode_to_distribution(data, 'a')
+        z = self.reparameterize(mu, logvar)
+        # change shape of z
+        (z_a_a, ze1_g_a, ze1_h_a, z_shape) = self.encode_to_z(z)
         if not is_inference_time:
-            z_a_b, ze1_g_b, ze1_h_b, _, _ = self.encode_to_z(data, 'b')
+            z_a_b, ze1_g_b, ze1_h_b, _ = self.encode_to_z(z)
 
         # Make each row a unit vector through L2 normalization to constrain
         # embeddings to the surface of a hypersphere
@@ -280,7 +279,7 @@ class DenseNetEncoder(nn.Module):
                 c_now = list(self.children())[-1].c_now
             self.c_now = c_now
 
-    def forward(self, x):  # change this function to get mu, logvar
+    def forward(self, x):
         # Apply initial layers and dense blocks
         for name, module in self.named_children():
             if name == 'initial':
