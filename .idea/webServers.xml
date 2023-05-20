@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="e0e8ab1e-4695-48f3-a100-8affc6ba72db" name="Server">
+        <fileTransfer accessType="SFTP" host="gpuws3.hcics.simtech.uni-stuttgart.de" port="22" sshConfigId="70a6dc10-ed01-476b-b4bf-b40d613fd0a9" sshConfig="tang@gpuws3.hcics.simtech.uni-stuttgart.de:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
