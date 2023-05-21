@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser(description='Train DT-ED')
 # architecture specification
 parser.add_argument('--densenet-growthrate', type=int, default=32,
                     help='growth rate of encoder/decoder base densenet archi. (default: 32)')
-parser.add_argument('--z-dim', type=int, default=118,
+parser.add_argument('--z-dim', type=int, default=640,
                     help='size of latent code for mu, logvar (default: 64)')
 parser.add_argument('--z-dim-app', type=int, default=64,
                     help='size of 1D latent code for appearance (default: 64)')
