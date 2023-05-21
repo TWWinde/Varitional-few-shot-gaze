@@ -75,14 +75,14 @@ class DTED(nn.Module):
         print('self.z_dim', self.z_dim)
         self.z_dim_gaze = z_dim_gaze
         self.z_dim_head = z_dim_head
-        z_num_all = 3 * (z_dim_gaze + z_dim_head) + z_dim_app
+        self.z_num_all = 3 * (z_dim_gaze + z_dim_head) + z_dim_app  # 118
         # The latent code parts for mu and logvar
         self.z_dim = z_dim  # dimension of mu and logvar
-        self.dense_enc = self.linear(c_now, 2 * self.z_dim)
-        self.dense_dec = self.linear(z_dim, z_num_all)
+        self.dense_enc = self.linear(c_now, 2 * self.z_num_all)
+        self.dense_dec = self.linear(z_dim, self.z_num_all)
 
-        self.fc_enc = self.linear(c_now, z_num_all)
-        self.fc_dec = self.linear(z_num_all, enc_num_all)
+        self.fc_enc = self.linear(c_now, self.z_num_all)
+        self.fc_dec = self.linear(self.z_num_all, enc_num_all)
 
         self.build_gaze_layers(3 * z_dim_gaze)
 
@@ -119,11 +119,11 @@ class DTED(nn.Module):
         x = self.encoder(data['image_' + suffix])  # ([64, 640, 2, 8])
         x = F.adaptive_avg_pool2d(x, 1)  # Global-Average Pooling
         x = x.view(x.size(0), -1)  # ([64, 640])
-        x = self.dense_dec(x)  # ([64, 118])
+        x = self.dense_enc(x)  # ([64, 118])
         print('dim of output of dense_dec :', x.shape)
-        print('self.z_dim :', self.z_dim)
-        mu = x[:, :self.z_dim]
-        logvar = x[:, self.z_dim:]
+        print('self.z_num_all:',self.z_num_all )
+        mu = x[:, :self.z_num_all]
+        logvar = x[:, self.z_num_all:]
 
         return mu, logvar
 
@@ -140,10 +140,9 @@ class DTED(nn.Module):
     def encode_to_z(self, z):
 
         # Create latent codes
-        z_all = self.dense_dec(z)
-        z_shape = z_all.dim()
-        z_app = z_all[:, :self.z_dim_app]
-        z_all = z_all[:, self.z_dim_app:]
+        z_shape = z.dim()
+        z_app = z[:, :self.z_dim_app]
+        z_all = z[:, self.z_dim_app:]
         z_all = z_all.view(self.batch_size, -1, 3)  # change the dimension to 3
         z_gaze_enc = z_all[:, :self.z_dim_gaze, :]
         z_head_enc = z_all[:, self.z_dim_gaze:, :]
