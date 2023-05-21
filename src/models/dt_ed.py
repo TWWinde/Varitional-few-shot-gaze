@@ -25,7 +25,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class DTED(nn.Module):
 
-    def __init__(self, z_dim, z_dim_app, z_dim_gaze, z_dim_head,
+    def __init__(self, z_dim_app, z_dim_gaze, z_dim_head,
                  growth_rate=32, activation_fn=nn.LeakyReLU,
                  normalization_fn=nn.InstanceNorm2d,
                  decoder_input_c=16,
@@ -70,20 +70,15 @@ class DTED(nn.Module):
         )
 
         # The latent code parts
-        self.z_dim = z_dim
+
         self.z_dim_app = z_dim_app
         print('self.z_dim', self.z_dim)
         self.z_dim_gaze = z_dim_gaze
         self.z_dim_head = z_dim_head
         self.z_num_all = 3 * (z_dim_gaze + z_dim_head) + z_dim_app  # 118
         # The latent code parts for mu and logvar
-        self.z_dim = z_dim  # dimension of mu and logvar
-        self.dense_enc = self.linear(c_now, 2 * self.z_num_all)
-        self.dense_dec = self.linear(z_dim, self.z_num_all)
-
-        self.fc_enc = self.linear(c_now, self.z_num_all)
+        self.fc_enc = self.linear(c_now, 2 * self.z_num_all)
         self.fc_dec = self.linear(self.z_num_all, enc_num_all)
-
         self.build_gaze_layers(3 * z_dim_gaze)
 
     def build_gaze_layers(self, num_input_neurons, num_hidden_neurons=64):
@@ -119,22 +114,20 @@ class DTED(nn.Module):
         x = self.encoder(data['image_' + suffix])  # ([64, 640, 2, 8])
         x = F.adaptive_avg_pool2d(x, 1)  # Global-Average Pooling
         x = x.view(x.size(0), -1)  # ([64, 640])
-        x = self.dense_enc(x)  # ([64, 118])
-        print('dim of output of dense_dec :', x.shape)
-        print('self.z_num_all:',self.z_num_all )
+        x = self.fc_enc(x)  # ([64, 236])
         mu = x[:, :self.z_num_all]
         logvar = x[:, self.z_num_all:]
 
         return mu, logvar
 
     def reparameterize(self, mean, logvar):
-        print('dim of std :', logvar.shape)
+
         std = torch.exp(logvar / 2)
         print('dim of std :', std.shape)
         print('dim of mean :', mean.shape)
         epsilon = torch.randn_like(std)
         z = epsilon * std + mean
-        return z
+        return z  # ([64, 118])
 
     ##########################
     def encode_to_z(self, z):
