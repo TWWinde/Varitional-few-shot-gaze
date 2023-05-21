@@ -72,7 +72,6 @@ class DTED(nn.Module):
         # The latent code parts
 
         self.z_dim_app = z_dim_app
-        print('self.z_dim', self.z_dim)
         self.z_dim_gaze = z_dim_gaze
         self.z_dim_head = z_dim_head
         self.z_num_all = 3 * (z_dim_gaze + z_dim_head) + z_dim_app  # 118
