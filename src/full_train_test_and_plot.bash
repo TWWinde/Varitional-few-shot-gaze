@@ -126,4 +126,4 @@ fi
 ####################################################################
 # 3. Collect all of the individual meta-learning experiment results
 
-python3 3_combine_maml_results.py ${OUTPUT_DIR}
+#python3 3_combine_maml_results.py ${OUTPUT_DIR}
