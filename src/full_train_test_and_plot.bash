@@ -60,7 +60,7 @@ then
 		--save-path ${OUTPUT_DIR} \
         "
     eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --distributed --local_rank=0; "
-    eval "python3 $TRAIN_CMD --local_rank=0 --skip-training --generate-predictions; "
+    #eval "python3 $TRAIN_CMD --local_rank=0 --skip-training --generate-predictions; "
 
 
 		#####################################################################################
@@ -96,31 +96,31 @@ fi
 #    time consuming, as 1000-step fine-tuning must occur for each participant
 #    in GazeCapture and MPIIGaze.
 
-ML_COMMON=" --disable-tqdm --output-dir ./"
+#ML_COMMON=" --disable-tqdm --output-dir ./"
 
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  1 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  2 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  3 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  4 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  5 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  6 &
-wait
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  1 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  2 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  3 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  4 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  5 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  6 &
+#wait
 
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  7 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  8 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  9 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 10 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 11 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 12 &
-wait
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  7 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  8 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR}  9 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 10 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 11 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 12 &
+#wait
 
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 13 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 14 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 15 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 16 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 17 &
-python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 18 &
-wait
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 13 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 14 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 15 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 16 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 17 &
+#python3 2_meta_learning.py ${ML_COMMON} ${OUTPUT_DIR} 18 &
+#wait
 
 
 ####################################################################
