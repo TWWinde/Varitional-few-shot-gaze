@@ -122,8 +122,6 @@ class DTED(nn.Module):
     def reparameterize(self, mean, logvar):
 
         std = torch.exp(logvar / 2)
-        print('dim of std :', std.shape)
-        print('dim of mean :', mean.shape)
         epsilon = torch.randn_like(std)
         z = epsilon * std + mean
         return z  # ([64, 118])
