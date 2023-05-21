@@ -70,6 +70,7 @@ class DTED(nn.Module):
         )
 
         # The latent code parts
+        self.z_dim = z_dim
         self.z_dim_app = z_dim_app
         self.z_dim_gaze = z_dim_gaze
         self.z_dim_head = z_dim_head
@@ -114,12 +115,10 @@ class DTED(nn.Module):
     # get latent variables
     #####################
     def encode_to_distribution(self, data, suffix):
-        x = self.encoder(data['image_' + suffix])
-        print('dim of output of encoder :', x.shape)
+        x = self.encoder(data['image_' + suffix])  # ([64, 640, 2, 8])
         x = F.adaptive_avg_pool2d(x, 1)  # Global-Average Pooling
-        x = x.view(x.size(0), -1)
-        print('dim of input of dense_dec :', x.shape)
-        x = self.dense_dec(x)
+        x = x.view(x.size(0), -1)  # ([64, 640])
+        x = self.dense_dec(x)  # ([64, 118])
         print('dim of output of dense_dec :', x.shape)
         mu = x[:, :self.z_dim]
         logvar = x[:, self.z_dim:]
