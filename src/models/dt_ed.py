@@ -72,12 +72,13 @@ class DTED(nn.Module):
         # The latent code parts
         self.z_dim = z_dim
         self.z_dim_app = z_dim_app
+        print('self.z_dim', self.z_dim)
         self.z_dim_gaze = z_dim_gaze
         self.z_dim_head = z_dim_head
         z_num_all = 3 * (z_dim_gaze + z_dim_head) + z_dim_app
         # The latent code parts for mu and logvar
         self.z_dim = z_dim  # dimension of mu and logvar
-        self.dense_enc = self.linear(c_now, 2 * z_dim)
+        self.dense_enc = self.linear(c_now, 2 * self.z_dim)
         self.dense_dec = self.linear(z_dim, z_num_all)
 
         self.fc_enc = self.linear(c_now, z_num_all)
@@ -120,6 +121,7 @@ class DTED(nn.Module):
         x = x.view(x.size(0), -1)  # ([64, 640])
         x = self.dense_dec(x)  # ([64, 118])
         print('dim of output of dense_dec :', x.shape)
+        print('self.z_dim :', self.z_dim)
         mu = x[:, :self.z_dim]
         logvar = x[:, self.z_dim:]
 
