@@ -115,15 +115,22 @@ class DTED(nn.Module):
     #####################
     def encode_to_distribution(self, data, suffix):
         x = self.encoder(data['image_' + suffix])
+        print('dim of output of encoder :', x.shape)
         x = F.adaptive_avg_pool2d(x, 1)  # Global-Average Pooling
         x = x.view(x.size(0), -1)
+        print('dim of input of dense_dec :', x.shape)
         x = self.dense_dec(x)
+        print('dim of output of dense_dec :', x.shape)
         mu = x[:, :self.z_dim]
         logvar = x[:, self.z_dim:]
+
         return mu, logvar
 
-    def reparameterize(mean, logvar):
+    def reparameterize(self, mean, logvar):
+        print('dim of std :', logvar.shape)
         std = torch.exp(logvar / 2)
+        print('dim of std :', std.shape)
+        print('dim of mean :', mean.shape)
         epsilon = torch.randn_like(std)
         z = epsilon * std + mean
         return z
