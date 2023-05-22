@@ -102,7 +102,7 @@ parser.add_argument('--num-data-loaders', type=int, default=0, metavar='N',
 parser.add_argument('--use-tensorboard', action='store_true', default=False,
                     help='create tensorboard logs (stored in the args.save_path directory)')
 parser.add_argument('--save-path', type=str, default='/projects/tang/fsg/src/outputs_of_full_train_test_and_plot'
-                                                     '/checkpoints/',
+                                                     '/checkpoints/model.pth',
                     help='path to save network parameters (default: .)')
 parser.add_argument('--show-warnings', action='store_true', default=False,
                     help='show default Python warnings')
@@ -612,7 +612,7 @@ def execute_training_step(current_step):
         # Done with an epoch now...!
         if num_elapsed_epochs % 5 == 0:
             saver.save_checkpoint(current_step)
-
+            print('new checkpoint saved')
         np.random.seed()  # Ensure randomness
 
         # Some cleanup
@@ -774,10 +774,12 @@ def execute_test(tag, data_dict):
                 tensorboard.add_scalar('test/%s/%s' % (tag, k), v, current_step + 1)
 
 
-############
+#################################################################################
 # Main loop 上边全都是在定义函数准备网络加载数据
 
-num_training_steps = int(args.num_training_epochs * len(train_dataset) / batch_size_global)
+num_training_steps = int(args.num_training_epochs * len(train_dataset) / batch_size_global)  # epochs 20
+print('len(train_dataset)', len(train_dataset))
+print('batch_size_global', batch_size_global)
 if args.skip_training:
     num_training_steps = 0
 else:
