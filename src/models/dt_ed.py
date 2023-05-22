@@ -170,6 +170,7 @@ class DTED(nn.Module):
         # Encode input to get mu logvar and sample from distribution to get z
         mu, logvar = self.encode_to_distribution(data, 'a')
         z = self.reparameterize(mu, logvar)
+
         # change shape of z
         (z_a_a, ze1_g_a, ze1_h_a, z_shape) = self.encode_to_z(z)
         if not is_inference_time:
@@ -202,6 +203,8 @@ class DTED(nn.Module):
             'z_head_enc': ze1_h_a,
             'canon_z_gaze_a': self.rotate_code(data, ze1_g_a, 'gaze', fr='a'),
             'canon_z_head_a': self.rotate_code(data, ze1_h_a, 'head', fr='a'),
+            'mu': mu,
+            'logvar': logvar,
         }
         if 'R_gaze_b' not in data:
             return output_dict
@@ -210,6 +213,8 @@ class DTED(nn.Module):
             output_dict['canon_z_gaze_b'] = self.rotate_code(data, ze1_g_b, 'gaze', fr='b')
             output_dict['canon_z_head_b'] = self.rotate_code(data, ze1_h_b, 'head', fr='b')
 
+        output_dict['mu'] = mu
+        output_dict['logvar'] = logvar
         # Rotate codes
         zd1_g_b = self.rotate_code(data, ze1_g_a, 'gaze', fr='a', to='b')
         zd1_h_b = self.rotate_code(data, ze1_h_a, 'head', fr='a', to='b')
