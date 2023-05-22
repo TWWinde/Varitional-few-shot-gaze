@@ -610,7 +610,7 @@ def execute_training_step(current_step):
                 tensorboard.add_scalar('timing/epoch', time_epoch_diff, num_elapsed_epochs)
 
         # Done with an epoch now...!
-        if num_elapsed_epochs % 5 == 0:
+        if num_elapsed_epochs % 1 == 0:
             saver.save_checkpoint(current_step)
             print('new checkpoint saved')
         np.random.seed()  # Ensure randomness
@@ -777,7 +777,7 @@ def execute_test(tag, data_dict):
 #################################################################################
 # Main loop 上边全都是在定义函数准备网络加载数据
 
-num_training_steps = int(args.num_training_epochs * len(train_dataset) / batch_size_global)  # epochs 20
+num_training_steps = int(args.num_training_epochs * len(train_dataset) / batch_size_global)  # epochs 20 #num 548177
 print('len(train_dataset)', len(train_dataset))
 print('batch_size_global', batch_size_global)
 if args.skip_training:
