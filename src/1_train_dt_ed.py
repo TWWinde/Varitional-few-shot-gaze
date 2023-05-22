@@ -778,6 +778,7 @@ def execute_test(tag, data_dict):
 # Main loop 上边全都是在定义函数准备网络加载数据
 
 num_training_steps = int(args.num_training_epochs * len(train_dataset) / batch_size_global)  # epochs 20 #num 548177
+print('num_training_steps', num_training_steps)
 print('len(train_dataset)', len(train_dataset))
 print('batch_size_global', batch_size_global)
 if args.skip_training:
