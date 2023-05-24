@@ -60,7 +60,7 @@ then
 		--save-path ${OUTPUT_DIR} \
         "
     #eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --distributed --local_rank=0; "
-    eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --distributed --local_rank=0 --skip-training --generate-predictions; "
+    eval "python3 -m torch.distributed.run --nproc_per_node=1 $TRAIN_CMD --local_rank=0 --skip-training --generate-predictions; "
 
 
 		#####################################################################################
