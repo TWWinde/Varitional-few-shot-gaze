@@ -686,7 +686,7 @@ def execute_training_step(current_step):
         ])
 
     if args.backprop_gaze_to_encoder:
-        loss_to_optimize += args.coeff_gaze_loss * loss_dict['gaze']
+        loss_to_optimize += args.coeff_gaze_loss * loss_dict['gaze']  # 0.1
 
     # Learning rate ramp-up until specified no. of samples passed, or decay
     update_learning_rate(current_step)
@@ -776,7 +776,7 @@ def execute_test(tag, data_dict):
 
 
 #################################################################################
-# Main loop 上边全都是在定义函数准备网络加载数据
+# Main loop
 
 num_training_steps = int(args.num_training_epochs * len(train_dataset) / batch_size_global)  # epochs 20 #num 548177
 print('num_training_steps', num_training_steps)
