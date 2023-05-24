@@ -932,6 +932,7 @@ del (train_dataloader, train_dataset, all_data,
 if args.generate_predictions:
     # make sure that DDP is off for generating predictions as multiple
     # processes cannot write together to the same .h5 file.
+    args.distributed = False
     assert args.distributed is False
 
     logging.info('Now generating predictions with final model...')
