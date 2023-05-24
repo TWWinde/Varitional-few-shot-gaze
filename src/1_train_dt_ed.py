@@ -87,7 +87,7 @@ parser.add_argument('--print-freq-test', type=int, default=5000, metavar='N',
 parser.add_argument('--distributed', dest="distributed", action='store_true', default='False',
                     help='Use distributed computing in training.')
 parser.add_argument('--local_rank', default=os.environ.get('LOCAL_RANK', 0), type=int)
-
+parser.add_argument('--rank', default=os.environ.get('RANK', 0), type=int)
 # data
 parser.add_argument('--mpiigaze-file', type=str, default='/projects/tang/fsg/preprocess/outputs/MPIIGaze.h5',
                     help='Path to MPIIGaze dataset in HDF format.')
