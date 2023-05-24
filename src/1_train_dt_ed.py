@@ -144,10 +144,6 @@ if args.distributed:
     from torch.nn.parallel import DistributedDataParallel as DDP
 
     torch.cuda.set_device(args.local_rank)
-    os.environ['RANK'] = '0'
-    os.environ['WORLD_SIZE'] = '1'
-    os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '22'
     torch.distributed.init_process_group(backend='nccl', init_method='env://')
     world_size = torch.distributed.get_world_size()
 else:
