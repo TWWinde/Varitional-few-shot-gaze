@@ -53,7 +53,7 @@ parser.add_argument('--backprop-gaze-to-encoder', action='store_true',
 
 parser.add_argument('--coeff-l1-recon-loss', type=float, default=1.0,
                     help='Weight/coefficient for L1 reconstruction loss term')
-parser.add_argument('--coeff-gaze-loss', type=float, default=0.1,
+parser.add_argument('--coeff-gaze-loss', type=float, default=0.5,
                     help='Weight/coefficient for gaze direction loss term')
 parser.add_argument('--coeff-embedding_consistency-loss', type=float, default=2.0,
                     help='Weight/coefficient for embedding_consistency loss term')
@@ -652,11 +652,11 @@ def execute_training_step(current_step):
 
     # Construct main loss  # add kl loss here
     if args.reconstruction_loss_type == 'ReconstructionL1Loss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + 1.0 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + 0.8 * loss_dict['kl']
     elif args.reconstruction_loss_type == 'AlexLoss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['alexloss'] + 1.0 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['alexloss'] + 0.8 * loss_dict['kl']
     elif args.reconstruction_loss_type == 'VggLoss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['vggloss'] + 1.0 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['vggloss'] + 0.8 * loss_dict['kl']
 
     if args.triplet_loss_type is not None:
         triplet_losses = []
