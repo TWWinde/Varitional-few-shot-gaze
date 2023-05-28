@@ -8,6 +8,6 @@ class KLDivergenceLoss(object):
         kl_loss = torch.mean(kl_loss)
         return kl_loss
 
-# 使用示例
+# use case
 # kl_loss = KLDivergenceLoss()
 # loss = kl_loss(mu, logvar)

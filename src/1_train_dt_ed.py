@@ -310,8 +310,9 @@ if args.distributed:
     network = DDP(network, device_ids=[args.local_rank])
     if args.local_rank == 0:
         logging.info('Using %d GPUs! with DDP' % world_size)
-        seed = np.random.randint(1e4)
-        seed = (seed + torch.distributed.get_rank()) % 2 ** 32
+        seed = 520
+        #seed = np.random.randint(1e4) # a number
+        #seed = (seed + torch.distributed.get_rank()) % 2 ** 32
 else:
     if torch.cuda.device_count() > 1:
         network = nn.DataParallel(network)
