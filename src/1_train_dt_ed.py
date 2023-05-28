@@ -8,6 +8,7 @@
 
 import os
 import argparse
+from random import random
 
 parser = argparse.ArgumentParser(description='Train DT-ED')
 
@@ -137,6 +138,16 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
+
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+
+seed = 520
 
 if args.distributed:
     print('distributed training ')
@@ -310,9 +321,9 @@ if args.distributed:
     network = DDP(network, device_ids=[args.local_rank])
     if args.local_rank == 0:
         logging.info('Using %d GPUs! with DDP' % world_size)
-        seed = 520
-        #seed = np.random.randint(1e4) # a number
-        #seed = (seed + torch.distributed.get_rank()) % 2 ** 32
+        set_seed(seed)
+        # seed = np.random.randint(1e4) # a number
+        # seed = (seed + torch.distributed.get_rank()) % 2 ** 32
 else:
     if torch.cuda.device_count() > 1:
         network = nn.DataParallel(network)
