@@ -660,11 +660,11 @@ def execute_training_step(current_step):
 
     # Construct main loss  # add kl loss here
     if args.reconstruction_loss_type == 'ReconstructionL1Loss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + 0.8 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + 0.5 * loss_dict['kl']
     elif args.reconstruction_loss_type == 'AlexLoss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['alexloss'] + 0.8 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['alexloss'] + 0.5 * loss_dict['kl']
     elif args.reconstruction_loss_type == 'VggLoss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['vggloss'] + 0.8 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['vggloss'] + 0.5 * loss_dict['kl']
 
     if args.triplet_loss_type is not None:
         triplet_losses = []
