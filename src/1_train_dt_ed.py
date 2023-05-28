@@ -109,7 +109,7 @@ parser.add_argument('--show-warnings', action='store_true', default=False,
                     help='show default Python warnings')
 
 # image saving
-parser.add_argument('--save-freq-images', type=int, default=1000,
+parser.add_argument('--save-freq-images', type=int, default=2000,
                     help='save sample images after every N iterations (default: 1000)')
 parser.add_argument('--save-image-samples', type=int, default=100,
                     help='Save image outputs for N samples per dataset (default: 100)')
