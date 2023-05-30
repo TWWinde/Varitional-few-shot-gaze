@@ -103,7 +103,7 @@ parser.add_argument('--num-data-loaders', type=int, default=0, metavar='N',
 parser.add_argument('--use-tensorboard', action='store_true', default=False,
                     help='create tensorboard logs (stored in the args.save_path directory)')
 parser.add_argument('--save-path', type=str, default='/projects/tang/fsg/src/outputs_of_full_train_test_and_plot'
-                                                     '/checkpoints/model.pth',
+                                                     '/checkpoints/',
                     help='path to save network parameters (default: .)')
 parser.add_argument('--show-warnings', action='store_true', default=False,
                     help='show default Python warnings')
