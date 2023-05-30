@@ -561,7 +561,11 @@ from checkpoints_manager import CheckpointsManager
 
 saver = CheckpointsManager(network, args.save_path)
 initial_step = saver.load_last_checkpoint(args.local_rank)
-
+if initial_step is not None:
+    print("成功加载检查点，初始步骤数为:", initial_step)
+    # 其他操作
+else:
+    print("未加载任何检查点，请检查路径和文件是否正确")
 
 ######################
 # Training step update
