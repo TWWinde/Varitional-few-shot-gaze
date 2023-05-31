@@ -57,9 +57,9 @@ class CheckpointsManager(object):
         weights = torch.load(checkpoint_fpath)
 
         # If was stored using DataParallel but being read on 1 GPU
-        if torch.cuda.device_count() == 1:
-            if next(iter(weights.keys())).startswith('module.'):
-                weights = dict([(k[7:], v) for k, v in weights.items()])
+       # if torch.cuda.device_count() == 1:
+         #   if next(iter(weights.keys())).startswith('module.'):
+          #      weights = dict([(k[7:], v) for k, v in weights.items()])
 
         self.network.load_state_dict(weights, local_rank)
         if local_rank == 0:
@@ -72,5 +72,6 @@ class CheckpointsManager(object):
         if not os.path.isdir(self.output_dir):
             os.makedirs(self.output_dir)
         ofpath = '%s/%s' % (self.output_dir, fname)
+        print("save path ",ofpath)
         torch.save(self.network.state_dict(), ofpath)
         torch.cuda.empty_cache()
