@@ -72,6 +72,5 @@ class CheckpointsManager(object):
         if not os.path.isdir(self.output_dir):
             os.makedirs(self.output_dir)
         ofpath = '%s/%s' % (self.output_dir, fname)
-        print("save path ",ofpath)
         torch.save(self.network.state_dict(), ofpath)
         torch.cuda.empty_cache()

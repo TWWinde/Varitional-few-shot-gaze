@@ -561,11 +561,7 @@ from checkpoints_manager import CheckpointsManager
 
 saver = CheckpointsManager(network, args.save_path)
 initial_step = saver.load_last_checkpoint(args.local_rank)
-if initial_step is not None:
-    print("成功加载检查点，初始步骤数为:", initial_step)
-    # 其他操作
-else:
-    print("未加载任何检查点，请检查路径和文件是否正确")
+
 
 ######################
 # Training step update
@@ -663,11 +659,11 @@ def execute_training_step(current_step):
 
     # Construct main loss  # add kl loss here
     if args.reconstruction_loss_type == 'ReconstructionL1Loss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + 0.5 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + 0.1 * loss_dict['kl']
     elif args.reconstruction_loss_type == 'AlexLoss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['alexloss'] + 0.5 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['alexloss'] + 0.1 * loss_dict['kl']
     elif args.reconstruction_loss_type == 'VggLoss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['vggloss'] + 0.5 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['vggloss'] + 0.1 * loss_dict['kl']
 
     if args.triplet_loss_type is not None:
         triplet_losses = []
