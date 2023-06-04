@@ -598,7 +598,7 @@ def reduce_loss(loss):
 
 
 # Cyclical Annealing Schedule: A Simple Approach to Mitigating KL Vanishing
-def frange_cycle_linear(current_step, beta_max=1, cycle=10000):
+def frange_cycle_linear(current_step, beta_max=1, cycle=100000):
     start = current_step % cycle
     if start <= cycle/2.0:
         beta = start * 1.0 / (cycle/2.0)
@@ -668,7 +668,7 @@ def execute_training_step(current_step):
             value = torch.mean(value)
             loss_dict[key] = value
 
-    beta = frange_cycle_linear(current_step, beta_max=1, cycle=10000)
+    beta = frange_cycle_linear(current_step, beta_max=1, cycle=100000)
     # Construct main loss  # add kl loss here
     if args.reconstruction_loss_type == 'ReconstructionL1Loss':
         loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + beta * loss_dict['kl']
