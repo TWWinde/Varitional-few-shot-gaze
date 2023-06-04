@@ -597,6 +597,17 @@ def reduce_loss(loss):
     return avg_loss
 
 
+# Cyclical Annealing Schedule: A Simple Approach to Mitigating KL Vanishing
+def frange_cycle_linear(current_step, beta_max=1, cycle=10000):
+    start = current_step % cycle
+    if start <= cycle/2.0:
+        beta = start * 1.0 / (cycle/2.0)
+    else:
+        beta = beta_max
+
+    return beta
+
+
 def execute_training_step(current_step):
     global train_data_iterator, time_epoch_start, num_elapsed_epochs
     torch.cuda.synchronize()
@@ -657,13 +668,14 @@ def execute_training_step(current_step):
             value = torch.mean(value)
             loss_dict[key] = value
 
+    beta = frange_cycle_linear(current_step, beta_max=1, cycle=10000)
     # Construct main loss  # add kl loss here
     if args.reconstruction_loss_type == 'ReconstructionL1Loss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] #+ 0.1 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + beta * loss_dict['kl']
     elif args.reconstruction_loss_type == 'AlexLoss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['alexloss'] #+ 0.1 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['alexloss'] + beta * loss_dict['kl']
     elif args.reconstruction_loss_type == 'VggLoss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['vggloss'] #+ 0.1 * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['vggloss'] + beta * loss_dict['kl']
 
     if args.triplet_loss_type is not None:
         triplet_losses = []
