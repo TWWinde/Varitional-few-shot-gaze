@@ -44,7 +44,7 @@ then
 		--mpiigaze-file ${MPIIGAZE_FILE} \
 		--gazecapture-file ${GAZECAPTURE_FILE} \
 		\
-		--num-training-epochs 20 \
+		--num-training-epochs 30 \
 		--batch-size $BATCH_SIZE \
 		--eval-batch-size 1024 \
 		\
