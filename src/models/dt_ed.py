@@ -166,7 +166,7 @@ class DTED(nn.Module):
     def forward(self, data, loss_functions=None):
         is_inference_time = ('image_b' not in data)
         self.batch_size = data['image_a'].shape[0]
-        print('inputshape',data['image_a'].shape())
+        print('inputshape',data['image_a'].size())
         # Encode input to get mu logvar and sample from distribution to get z
         mu, logvar = self.encode_to_distribution(data, 'a')
         z = self.reparameterize(mu, logvar)
