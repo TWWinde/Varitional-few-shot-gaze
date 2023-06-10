@@ -166,7 +166,7 @@ class DTED(nn.Module):
     def forward(self, data, loss_functions=None):
         is_inference_time = ('image_b' not in data)
         self.batch_size = data['image_a'].shape[0]
-
+        print('inputshape',data['image_a'].shape())
         # Encode input to get mu logvar and sample from distribution to get z
         mu, logvar = self.encode_to_distribution(data, 'a')
         z = self.reparameterize(mu, logvar)
@@ -240,6 +240,7 @@ class DTED(nn.Module):
         return output_dict
 
 
+###################change encoder to pretrained  Resnet18#############
 class DenseNetEncoder(nn.Module):
 
     def __init__(self, growth_rate=8, num_blocks=4, num_layers_per_block=4,
