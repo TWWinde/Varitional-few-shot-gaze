@@ -53,12 +53,7 @@ class DTED(nn.Module):
         self.bottleneck_shape = bottleneck_shape
 
         # The meaty parts
-        self.encoder = DenseNetEncoder(
-            num_blocks=4,
-            growth_rate=growth_rate,
-            activation_fn=activation_fn,
-            normalization_fn=normalization_fn,
-        )
+        self.encoder = DenseNetEncoder()
         c_now = list(self.children())[-1].c_now
         self.decoder_input_c = decoder_input_c
         enc_num_all = np.prod(bottleneck_shape) * self.decoder_input_c
@@ -247,6 +242,9 @@ class DenseNetEncoder(nn.Module):
     def __init__(self):
         super(DenseNetEncoder, self).__init__()
         self.model = resnet18(pretrained=True)
+        for param in self.model.parameters():
+            param.requires_grad = False
+
 
     def forward(self, x):
         x = torch.nn.functional.interpolate(x, size=(224, 224), mode='bilinear', align_corners=False)
