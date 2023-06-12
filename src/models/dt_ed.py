@@ -13,7 +13,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torchvision.models import resnet18
 
+# resnet_model = torch.hub.load('pytorch/vision:v0.11.1', 'resnet18', pretrained=True)
 from .densenet import (
     DenseNetInitialLayers,
     DenseNetBlock,
@@ -76,7 +78,7 @@ class DTED(nn.Module):
         self.z_dim_head = z_dim_head
         self.z_num_all = 3 * (z_dim_gaze + z_dim_head) + z_dim_app  # 118
         # The latent code parts for mu and logvar
-        self.fc_enc = self.linear(c_now, 2 * self.z_num_all)
+        self.fc_enc = self.linear(512, 2 * self.z_num_all)
         self.fc_dec = self.linear(self.z_num_all, enc_num_all)
         self.build_gaze_layers(3 * z_dim_gaze)
 
@@ -110,9 +112,9 @@ class DTED(nn.Module):
     # get latent variables
     #####################
     def encode_to_distribution(self, data, suffix):
-        x = self.encoder(data['image_' + suffix])  # ([64, 640, 2, 8])
-        x = F.adaptive_avg_pool2d(x, 1)  # Global-Average Pooling
-        x = x.view(x.size(0), -1)  # ([64, 640])
+        x = self.encoder(data['image_' + suffix])  # ([64, 640, 2, 8])  [64, 512, 1, 1]
+        # x = F.adaptive_avg_pool2d(x, 1)  # Global-Average Pooling
+        x = x.view(x.size(0), -1)  # ([64, 640]) [64, 512]
         x = self.fc_enc(x)  # ([64, 236])
         mu = x[:, :self.z_num_all]
         logvar = x[:, self.z_num_all:]
@@ -165,8 +167,7 @@ class DTED(nn.Module):
 
     def forward(self, data, loss_functions=None):
         is_inference_time = ('image_b' not in data)
-        self.batch_size = data['image_a'].shape[0]
-        print('inputshape',data['image_a'].size())
+        self.batch_size = data['image_a'].shape[0]  # input shape   [64，3，64，256]
         # Encode input to get mu logvar and sample from distribution to get z
         mu, logvar = self.encode_to_distribution(data, 'a')
         z = self.reparameterize(mu, logvar)
@@ -240,55 +241,16 @@ class DTED(nn.Module):
         return output_dict
 
 
-###################change encoder to pretrained  Resnet18#############
+###################change encoder to pretrained  Resnet18############# # input shape   [64，3，64，256]
 class DenseNetEncoder(nn.Module):
 
-    def __init__(self, growth_rate=8, num_blocks=4, num_layers_per_block=4,
-                 p_dropout=0.0, compression_factor=1.0,
-                 activation_fn=nn.ReLU, normalization_fn=nn.BatchNorm2d):
+    def __init__(self):
         super(DenseNetEncoder, self).__init__()
-        self.c_at_end_of_each_scale = []
-
-        # Initial down-sampling conv layers
-        self.initial = DenseNetInitialLayers(growth_rate=growth_rate,
-                                             activation_fn=activation_fn,
-                                             normalization_fn=normalization_fn)
-        c_now = list(self.children())[-1].c_now  # 获取当前子模块的输出通道数
-        self.c_at_end_of_each_scale += list(self.children())[-1].c_list
-
-        assert (num_layers_per_block % 2) == 0
-        for i in range(num_blocks):
-            i_ = i + 1
-            # Define dense block
-            self.add_module('block%d' % i_, DenseNetBlock(
-                c_now,
-                num_layers=num_layers_per_block,
-                growth_rate=growth_rate,
-                p_dropout=p_dropout,
-                activation_fn=activation_fn,
-                normalization_fn=normalization_fn,
-            ))
-            c_now = list(self.children())[-1].c_now
-            self.c_at_end_of_each_scale.append(c_now)
-
-            # Define transition block if not last layer down sampling
-            if i < (num_blocks - 1):
-                self.add_module('trans%d' % i_, DenseNetTransitionDown(
-                    c_now, p_dropout=p_dropout,
-                    compression_factor=compression_factor,
-                    activation_fn=activation_fn,
-                    normalization_fn=normalization_fn,
-                ))
-                c_now = list(self.children())[-1].c_now
-            self.c_now = c_now
+        self.model = resnet18(pretrained=True)
 
     def forward(self, x):
-        # Apply initial layers and dense blocks
-        for name, module in self.named_children():
-            if name == 'initial':
-                x, prev_scale_x = module(x)
-            else:
-                x = module(x)
+        x = torch.nn.functional.interpolate(x, size=(224, 224), mode='bilinear', align_corners=False)
+        x = self.model(x)
 
         return x
 
