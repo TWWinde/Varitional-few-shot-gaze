@@ -108,11 +108,8 @@ class DTED(nn.Module):
     #####################
     def encode_to_distribution(self, data, suffix):
         x = self.encoder(data['image_' + suffix])  # ([64, 640, 2, 8])  [64, 512, 1, 1]
-        print('x_afer_encoder', x.size())
-        # x = F.adaptive_avg_pool2d(x, 1)  # Global-Average Pooling
         x = x.view(x.size(0), -1)  # ([64, 640]) [64, 512]
         x = self.fc_enc(x)  # ([64, 236])
-        print('x_afer_efc', x.size())
         mu = x[:, :self.z_num_all]
         logvar = x[:, self.z_num_all:]
 
@@ -167,7 +164,6 @@ class DTED(nn.Module):
         self.batch_size = data['image_a'].shape[0]  # input shape   [64，3，64，256]
         # Encode input to get mu logvar and sample from distribution to get z
         mu, logvar = self.encode_to_distribution(data, 'a')
-        print('mu_size', mu.size())
         z = self.reparameterize(mu, logvar)
 
         # change shape of z
@@ -249,11 +245,10 @@ class DenseNetEncoder(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
 
-
     def forward(self, x):
         x = torch.nn.functional.interpolate(x, size=(224, 224), mode='bilinear', align_corners=False)
         x = self.model(x)
-        print('output of encoder', x.size())
+
         return x
 
 
