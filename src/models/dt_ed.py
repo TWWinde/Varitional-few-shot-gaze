@@ -54,7 +54,7 @@ class DTED(nn.Module):
 
         # The meaty parts
         self.encoder = DenseNetEncoder()
-        c_now = list(self.children())[-1].c_now
+        # c_now = list(self.children())[-1].c_now
         self.decoder_input_c = decoder_input_c
         enc_num_all = np.prod(bottleneck_shape) * self.decoder_input_c
         self.decoder = DenseNetDecoder(
