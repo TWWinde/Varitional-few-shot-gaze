@@ -16,4 +16,4 @@ from .embedding_consistency import EmbeddingConsistencyLoss
 
 __all__ = ('AllFrontalsEqualLoss', 'BatchHardTripletLoss',
            'GazeAngularLoss', 'GazeMSELoss', 'KLDivergenceLoss',
-           'ReconstructionL1Loss', 'AlexLoss', 'VggLoss', 'EmbeddingConsistencyLoss')
+           'ReconstructionL1Loss',  'EmbeddingConsistencyLoss')

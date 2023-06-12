@@ -326,16 +326,13 @@ else:
 
 ################################################
 # Define loss functions
-from losses import (ReconstructionL1Loss, AlexLoss, VggLoss, GazeAngularLoss, BatchHardTripletLoss,
+from losses import (ReconstructionL1Loss,  GazeAngularLoss, BatchHardTripletLoss,
                     AllFrontalsEqualLoss, EmbeddingConsistencyLoss, KLDivergenceLoss)
 
 loss_functions = OrderedDict()
 if args.reconstruction_loss_type == 'ReconstructionL1Loss':
     loss_functions['recon_l1'] = ReconstructionL1Loss(suffix='b')
-elif args.reconstruction_loss_type == 'AlexLoss':
-    loss_functions['alexloss'] = AlexLoss(suffix='b')
-elif args.reconstruction_loss_type == 'VggLoss':
-    loss_functions['vggloss'] = VggLoss(suffix='b')
+
 
 loss_functions['gaze'] = GazeAngularLoss()
 # add Kl-divergence loss
@@ -672,10 +669,7 @@ def execute_training_step(current_step):
     # Construct main loss  # add kl loss here
     if args.reconstruction_loss_type == 'ReconstructionL1Loss':
         loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + beta * loss_dict['kl']
-    elif args.reconstruction_loss_type == 'AlexLoss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['alexloss'] + beta * loss_dict['kl']
-    elif args.reconstruction_loss_type == 'VggLoss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['vggloss'] + beta * loss_dict['kl']
+
 
     if args.triplet_loss_type is not None:
         triplet_losses = []
