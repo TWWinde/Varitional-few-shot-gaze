@@ -245,6 +245,7 @@ class DenseNetEncoder(nn.Module):
     def __init__(self):
         super(DenseNetEncoder, self).__init__()
         self.model = resnet18(pretrained=True)
+        self.model = torch.nn.Sequential(*list(self.model.children())[:-1])
         for param in self.model.parameters():
             param.requires_grad = False
 
@@ -252,7 +253,7 @@ class DenseNetEncoder(nn.Module):
     def forward(self, x):
         x = torch.nn.functional.interpolate(x, size=(224, 224), mode='bilinear', align_corners=False)
         x = self.model(x)
-
+        print('output of encoder', x.size())
         return x
 
 
