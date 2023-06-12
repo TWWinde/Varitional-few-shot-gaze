@@ -11,7 +11,7 @@ from .batch_hard_triplet import BatchHardTripletLoss
 from .gaze_angular import GazeAngularLoss
 from .gaze_mse import GazeMSELoss
 from .kl_loss import KLDivergenceLoss
-from .reconstruction_l1 import ReconstructionL1Loss, AlexLoss, VggLoss
+from .reconstruction_l1 import ReconstructionL1Loss
 from .embedding_consistency import EmbeddingConsistencyLoss
 
 __all__ = ('AllFrontalsEqualLoss', 'BatchHardTripletLoss',
