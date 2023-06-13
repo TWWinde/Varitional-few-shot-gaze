@@ -668,7 +668,7 @@ def execute_training_step(current_step):
     beta = frange_cycle_linear(current_step, beta_max=1, cycle=10000)
     # Construct main loss  # add kl loss here
     if args.reconstruction_loss_type == 'ReconstructionL1Loss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + beta * loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + loss_dict['kl']
 
 
     if args.triplet_loss_type is not None:
