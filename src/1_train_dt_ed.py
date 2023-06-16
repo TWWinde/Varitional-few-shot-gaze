@@ -54,7 +54,7 @@ parser.add_argument('--backprop-gaze-to-encoder', action='store_true',
 
 parser.add_argument('--coeff-l1-recon-loss', type=float, default=1.0,
                     help='Weight/coefficient for L1 reconstruction loss term')
-parser.add_argument('--coeff-gaze-loss', type=float, default=0.3,
+parser.add_argument('--coeff-gaze-loss', type=float, default=0.5,
                     help='Weight/coefficient for gaze direction loss term')
 parser.add_argument('--coeff-embedding_consistency-loss', type=float, default=2.0,
                     help='Weight/coefficient for embedding_consistency loss term')
@@ -665,10 +665,10 @@ def execute_training_step(current_step):
             value = torch.mean(value)
             loss_dict[key] = value
 
-    beta = frange_cycle_linear(current_step, beta_max=1, cycle=10000)
+    beta = frange_cycle_linear(current_step, beta_max=0.5, cycle=100000)
     # Construct main loss  # add kl loss here
     if args.reconstruction_loss_type == 'ReconstructionL1Loss':
-        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + loss_dict['kl']
+        loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + beta * loss_dict['kl']
 
 
     if args.triplet_loss_type is not None:
