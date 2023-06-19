@@ -54,7 +54,7 @@ parser.add_argument('--backprop-gaze-to-encoder', action='store_true',
 
 parser.add_argument('--coeff-l1-recon-loss', type=float, default=1.0,
                     help='Weight/coefficient for L1 reconstruction loss term')
-parser.add_argument('--coeff-gaze-loss', type=float, default=1.0,
+parser.add_argument('--coeff-gaze-loss', type=float, default=2.0,
                     help='Weight/coefficient for gaze direction loss term')
 parser.add_argument('--coeff-embedding_consistency-loss', type=float, default=2.0,
                     help='Weight/coefficient for embedding_consistency loss term')
