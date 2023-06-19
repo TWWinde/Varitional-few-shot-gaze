@@ -235,7 +235,7 @@ class DTED(nn.Module):
         return output_dict
 
 
-###################change encoder to pretrained  Resnet18############# # input shape   [64，3，64，256]
+######change encoder to pretrained  Resnet18############# # input shape   [64，3，64，256]
 class DenseNetEncoder(nn.Module):
 
     def __init__(self):
