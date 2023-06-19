@@ -853,19 +853,19 @@ for current_step in range(initial_step, num_training_steps):
 
     ###############
     # Testing loop: every specified iterations compute the test statistics
-    if (current_step % args.print_freq_test == (args.print_freq_test - 1)
-            or current_step == last_training_step):
-        network.eval()
-        optimizer.zero_grad()
-        if not args.backprop_gaze_to_encoder:
-            gaze_optimizer.zero_grad()
-        torch.cuda.empty_cache()
+    #if (current_step % args.print_freq_test == (args.print_freq_test - 1)
+            #or current_step == last_training_step):
+        #network.eval()
+        #optimizer.zero_grad()
+        #if not args.backprop_gaze_to_encoder:
+           # gaze_optimizer.zero_grad()
+        #torch.cuda.empty_cache()
 
-        for tag, data_dict in list(all_data.items())[1:]:
-            execute_test(tag, data_dict)
+        # for tag, data_dict in list(all_data.items())[1:]:
+            #execute_test(tag, data_dict)
 
             # This might help with memory leaks
-            torch.cuda.empty_cache()
+            #torch.cuda.empty_cache()
 
     #####################
     # Visualization loop
