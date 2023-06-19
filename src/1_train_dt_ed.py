@@ -138,12 +138,12 @@ import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
 
-random.seed(520)
-np.random.seed(520)
-torch.manual_seed(520)
+random.seed(521)
+np.random.seed(521)
+torch.manual_seed(521)
 if torch.cuda.is_available():
-    torch.cuda.manual_seed_all(520)
-torch.cuda.manual_seed_all(520)
+    torch.cuda.manual_seed_all(521)
+torch.cuda.manual_seed_all(521)
 
 if args.distributed:
     print('distributed training ')
