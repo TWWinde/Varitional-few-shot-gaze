@@ -59,7 +59,7 @@ class DTED(nn.Module):
         enc_num_all = np.prod(bottleneck_shape) * self.decoder_input_c
         self.decoder = DenseNetDecoder(
             self.decoder_input_c,
-            num_blocks=4,
+            num_blocks=6,
             growth_rate=growth_rate,
             activation_fn=activation_fn,
             normalization_fn=normalization_fn,
