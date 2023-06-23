@@ -79,7 +79,8 @@ class DTED(nn.Module):
 
     def build_gaze_layers(self, num_input_neurons, num_hidden_neurons=64):
         self.gaze1 = self.linear(num_input_neurons, self.gaze_hidden_layer_neurons)
-        self.gaze2 = self.linear(self.gaze_hidden_layer_neurons, 3)
+        self.gaze2 = self.linear(self.gaze_hidden_layer_neurons, self.gaze_hidden_layer_neurons/2.0)
+        self.gaze3 = self.linear(self.gaze_hidden_layer_neurons/2.0, 3)
 
     # define dense layer and init them
     def linear(self, f_in, f_out):
@@ -188,7 +189,9 @@ class DTED(nn.Module):
         else:
             # Detach input embeddings from graph!
             gaze_features = ze1_g_a.detach().view(self.batch_size, -1)
-        gaze_a_hat = self.gaze2(F.relu_(self.gaze1(gaze_features)))
+        gaze_a_hat = F.relu_(self.gaze1(gaze_features))
+        gaze_a_hat = F.relu_(self.gaze2(gaze_a_hat))
+        gaze_a_hat = self.gaze3(gaze_a_hat)
         gaze_a_hat = F.normalize(gaze_a_hat, dim=-1)
 
         output_dict = {
@@ -254,7 +257,7 @@ class DenseNetEncoder(nn.Module):
 
 class DenseNetDecoder(nn.Module):
 
-    def __init__(self, c_in, growth_rate=8, num_blocks=4, num_layers_per_block=4,
+    def __init__(self, c_in, growth_rate=8, num_blocks=6, num_layers_per_block=4,
                  p_dropout=0.0, compression_factor=1.0,
                  activation_fn=nn.ReLU, normalization_fn=nn.BatchNorm2d,
                  use_skip_connections_from=None):
