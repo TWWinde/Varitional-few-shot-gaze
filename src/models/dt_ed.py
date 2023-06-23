@@ -79,8 +79,8 @@ class DTED(nn.Module):
 
     def build_gaze_layers(self, num_input_neurons, num_hidden_neurons=64):
         self.gaze1 = self.linear(num_input_neurons, self.gaze_hidden_layer_neurons)
-        self.gaze2 = self.linear(self.gaze_hidden_layer_neurons, self.gaze_hidden_layer_neurons/2.0)
-        self.gaze3 = self.linear(self.gaze_hidden_layer_neurons/2.0, 3)
+        self.gaze2 = self.linear(self.gaze_hidden_layer_neurons, self.gaze_hidden_layer_neurons//2)
+        self.gaze3 = self.linear(self.gaze_hidden_layer_neurons//2, 3)
 
     # define dense layer and init them
     def linear(self, f_in, f_out):
