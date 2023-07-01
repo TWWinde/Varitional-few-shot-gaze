@@ -110,7 +110,7 @@ class DTED(nn.Module):
     def encode_to_distribution(self, data, suffix):
         x = self.encoder(data['image_' + suffix])  # ([64, 640, 2, 8])  [64, 512, 1, 1]
         x = x.view(x.size(0), -1)  # ([64, 640]) [64, 512]
-        print(x.size())
+        print('####################',x.size())
         x = self.fc_enc(x)  # ([64, 236])
         mu = x[:, :self.z_num_all]
         logvar = x[:, self.z_num_all:]
