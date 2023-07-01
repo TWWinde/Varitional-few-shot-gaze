@@ -13,7 +13,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torchvision.models import resnet18
+from torchvision.models import resnet18, densenet121
 
 # resnet_model = torch.hub.load('pytorch/vision:v0.11.1', 'resnet18', pretrained=True)
 from .densenet import (
@@ -59,7 +59,7 @@ class DTED(nn.Module):
         enc_num_all = np.prod(bottleneck_shape) * self.decoder_input_c
         self.decoder = DenseNetDecoder(
             self.decoder_input_c,
-            num_blocks=6,
+            num_blocks=4,
             growth_rate=growth_rate,
             activation_fn=activation_fn,
             normalization_fn=normalization_fn,
@@ -243,7 +243,8 @@ class DenseNetEncoder(nn.Module):
 
     def __init__(self):
         super(DenseNetEncoder, self).__init__()
-        self.model = resnet18(pretrained=True)
+        #self.model = resnet18(pretrained=True)
+        self.model = densenet121(pretrained=True)
         self.model = torch.nn.Sequential(*list(self.model.children())[:-1])
         for param in self.model.parameters():
             param.requires_grad = False
@@ -257,7 +258,7 @@ class DenseNetEncoder(nn.Module):
 
 class DenseNetDecoder(nn.Module):
 
-    def __init__(self, c_in, growth_rate=8, num_blocks=6, num_layers_per_block=4,
+    def __init__(self, c_in, growth_rate=8, num_blocks=4, num_layers_per_block=4,
                  p_dropout=0.0, compression_factor=1.0,
                  activation_fn=nn.ReLU, normalization_fn=nn.BatchNorm2d,
                  use_skip_connections_from=None):
