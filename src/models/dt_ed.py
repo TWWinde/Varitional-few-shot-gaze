@@ -246,7 +246,7 @@ class DenseNetEncoder(nn.Module):
         super(DenseNetEncoder, self).__init__()
         #self.model = resnet18(pretrained=True)
         self.model = densenet121(pretrained=True)
-        self.model = torch.nn.Sequential(*list(self.model.children())[:-1])
+        #self.model = torch.nn.Sequential(*list(self.model.children())[:-1])
         for param in self.model.parameters():
             param.requires_grad = False
 
