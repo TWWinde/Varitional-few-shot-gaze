@@ -109,6 +109,7 @@ class DTED(nn.Module):
     #####################
     def encode_to_distribution(self, data, suffix):
         x = self.encoder(data['image_' + suffix])  # ([64, 640, 2, 8])  [64, 512, 1, 1]
+        print('output encoder', x.size())
         x = x.view(x.size(0), -1)  # ([64, 640]) [64, 512]
         print('####################',x.size())
         x = self.fc_enc(x)  # ([64, 236])
@@ -247,13 +248,16 @@ class DenseNetEncoder(nn.Module):
         #self.model = resnet18(pretrained=True)
         self.model = densenet121(pretrained=True)
         self.model = torch.nn.Sequential(*list(self.model.children())[:-1])
+        self.model.add_module('fcl', nn.Linear(1024, 512))
         for param in self.model.parameters():
             param.requires_grad = False
 
     def forward(self, x):
         x = torch.nn.functional.interpolate(x, size=(224, 224), mode='bilinear', align_corners=False)
+        print('input size', x.size())
         x = self.model(x)
-        nn.Linear(1024, 512)
+        print('output encoder', x.size())
+
 
         return x
 
