@@ -254,11 +254,9 @@ class DenseNetEncoder(nn.Module):
 
     def forward(self, x):
         x = torch.nn.functional.interpolate(x, size=(224, 224), mode='bilinear', align_corners=False)
-        print('input size', x.size())
+        # input size ([64, 3, 224, 224])
         x = self.model(x)
         x = self.fc(x)
-        print('output encoder', x.size())
-
 
         return x
 
