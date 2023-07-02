@@ -15,7 +15,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models import resnet18, densenet121
 
-# resnet_model = torch.hub.load('pytorch/vision:v0.11.1', 'resnet18', pretrained=True)
 from .densenet import (
     DenseNetInitialLayers,
     DenseNetBlock,
@@ -80,7 +79,9 @@ class DTED(nn.Module):
     def build_gaze_layers(self, num_input_neurons, num_hidden_neurons=64):
         self.gaze1 = self.linear(num_input_neurons, self.gaze_hidden_layer_neurons)
         self.gaze2 = self.linear(self.gaze_hidden_layer_neurons, self.gaze_hidden_layer_neurons//2)
-        self.gaze3 = self.linear(self.gaze_hidden_layer_neurons//2, 3)
+        self.gaze3 = self.linear(self.gaze_hidden_layer_neurons//2, self.gaze_hidden_layer_neurons // 4)
+        self.gaze4 = self.linear(self.gaze_hidden_layer_neurons // 4, self.gaze_hidden_layer_neurons // 8)
+        self.gaze5 = self.linear(self.gaze_hidden_layer_neurons // 8, 3)
 
     # define dense layer and init them
     def linear(self, f_in, f_out):
@@ -191,7 +192,9 @@ class DTED(nn.Module):
             gaze_features = ze1_g_a.detach().view(self.batch_size, -1)
         gaze_a_hat = F.relu_(self.gaze1(gaze_features))
         gaze_a_hat = F.relu_(self.gaze2(gaze_a_hat))
-        gaze_a_hat = self.gaze3(gaze_a_hat)
+        gaze_a_hat = F.relu_(self.gaze3(gaze_a_hat))
+        gaze_a_hat = F.relu_(self.gaze4(gaze_a_hat))
+        gaze_a_hat = F.relu_(self.gaze5(gaze_a_hat))
         gaze_a_hat = F.normalize(gaze_a_hat, dim=-1)
 
         output_dict = {

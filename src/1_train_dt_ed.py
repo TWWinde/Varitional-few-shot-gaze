@@ -54,7 +54,7 @@ parser.add_argument('--backprop-gaze-to-encoder', action='store_true',
 
 parser.add_argument('--coeff-l1-recon-loss', type=float, default=1.0,
                     help='Weight/coefficient for L1 reconstruction loss term')
-parser.add_argument('--coeff-gaze-loss', type=float, default=2.0,
+parser.add_argument('--coeff-gaze-loss', type=float, default=5.0,
                     help='Weight/coefficient for gaze direction loss term')
 parser.add_argument('--coeff-embedding_consistency-loss', type=float, default=2.0,
                     help='Weight/coefficient for embedding_consistency loss term')
@@ -138,12 +138,12 @@ import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
 
-random.seed(521)
-np.random.seed(521)
-torch.manual_seed(521)
+random.seed(520)
+np.random.seed(520)
+torch.manual_seed(520)
 if torch.cuda.is_available():
-    torch.cuda.manual_seed_all(521)
-torch.cuda.manual_seed_all(521)
+    torch.cuda.manual_seed_all(520)
+torch.cuda.manual_seed_all(520)
 
 if args.distributed:
     print('distributed training ')
@@ -595,7 +595,7 @@ def reduce_loss(loss):
 
 
 # Cyclical Annealing Schedule: A Simple Approach to Mitigating KL Vanishing
-def frange_cycle_linear(current_step, beta_max=1, cycle=10000):
+def frange_cycle_linear(current_step, beta_max=0.5, cycle=100000):
     start = current_step % cycle
     if start <= cycle/2.0:
         beta = start * beta_max * 1.0 / (cycle/2.0)
@@ -699,7 +699,7 @@ def execute_training_step(current_step):
         ])
 
     if args.backprop_gaze_to_encoder:
-        loss_to_optimize += args.coeff_gaze_loss * loss_dict['gaze']  # 0.1
+        loss_to_optimize += args.coeff_gaze_loss * loss_dict['gaze']  # 5
 
     # Learning rate ramp-up until specified no. of samples passed, or decay
     update_learning_rate(current_step)
