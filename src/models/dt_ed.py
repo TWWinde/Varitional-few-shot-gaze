@@ -73,13 +73,15 @@ class DTED(nn.Module):
         self.z_num_all = 3 * (z_dim_gaze + z_dim_head) + z_dim_app  # 118
         # The latent code parts for mu and logvar
         self.fc_enc = self.linear(512, 2 * self.z_num_all)
+        self.fc_enc1 = self.linear(2 * self.z_num_all, self.z_num_all)
+        self.fc_enc2 = self.linear(2 * self.z_num_all, self.z_num_all)
         self.fc_dec = self.linear(self.z_num_all, enc_num_all)
         self.build_gaze_layers(3 * z_dim_gaze)
 
     def build_gaze_layers(self, num_input_neurons, num_hidden_neurons=64):
         self.gaze1 = self.linear(num_input_neurons, self.gaze_hidden_layer_neurons)
-        self.gaze2 = self.linear(self.gaze_hidden_layer_neurons, self.gaze_hidden_layer_neurons//2)
-        self.gaze3 = self.linear(self.gaze_hidden_layer_neurons//2, self.gaze_hidden_layer_neurons // 4)
+        self.gaze2 = self.linear(self.gaze_hidden_layer_neurons, self.gaze_hidden_layer_neurons // 2)
+        self.gaze3 = self.linear(self.gaze_hidden_layer_neurons // 2, self.gaze_hidden_layer_neurons // 4)
         self.gaze4 = self.linear(self.gaze_hidden_layer_neurons // 4, self.gaze_hidden_layer_neurons // 8)
         self.gaze5 = self.linear(self.gaze_hidden_layer_neurons // 8, 3)
 
@@ -110,10 +112,10 @@ class DTED(nn.Module):
     #####################
     def encode_to_distribution(self, data, suffix):
         x = self.encoder(data['image_' + suffix])  # ([64, 640, 2, 8])  [64, 512, 1, 1]
-        #x = x.view(x.size(0), -1)  # ([64, 640]) [64, 512]
+        # x = x.view(x.size(0), -1)  # ([64, 640]) [64, 512]
         x = self.fc_enc(x)  # ([64, 236])
-        mu = x[:, :self.z_num_all]
-        logvar = x[:, self.z_num_all:]
+        mu = self.fc_enc1(x)  # x[:, :self.z_num_all]
+        logvar = self.fc_enc2(x)  # x[:, self.z_num_all:]
 
         return mu, logvar
 
@@ -246,9 +248,9 @@ class DenseNetEncoder(nn.Module):
 
     def __init__(self):
         super(DenseNetEncoder, self).__init__()
-        #self.model = resnet18(pretrained=True)
+        # self.model = resnet18(pretrained=True)
         self.model = densenet121(pretrained=True)
-        #self.model = torch.nn.Sequential(*list(self.model.children())[:-1])
+        # self.model = torch.nn.Sequential(*list(self.model.children())[:-1])
         self.fc = nn.Linear(1000, 512)
         for param in self.model.parameters():
             param.requires_grad = False
