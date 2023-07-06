@@ -123,6 +123,7 @@ class DTED(nn.Module):
 
         std = torch.exp(logvar / 2)
         epsilon = torch.randn_like(std)
+        print(epsilon)
         z = epsilon * std + mean
         return z  # ([64, 118])
 
