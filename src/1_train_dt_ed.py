@@ -268,7 +268,7 @@ if args.use_apex:
 else:
     SGD = optim.SGD
 
-gaze_lr = 0.1 * args.base_lr
+gaze_lr = 1.0 * args.base_lr
 if args.backprop_gaze_to_encoder:
     optimizer = SGD(
         [
@@ -665,8 +665,9 @@ def execute_training_step(current_step):
             value = torch.mean(value)
             loss_dict[key] = value
 
-    beta = frange_cycle_linear(current_step, beta_max=0.5, cycle=100000)
+
     # Construct main loss  # add kl loss here
+    beta = frange_cycle_linear(current_step, beta_max=0.5, cycle=100000)
     if args.reconstruction_loss_type == 'ReconstructionL1Loss':
         loss_to_optimize = args.coeff_l1_recon_loss * loss_dict['recon_l1'] + beta * loss_dict['kl']
 
