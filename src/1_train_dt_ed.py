@@ -268,7 +268,7 @@ if args.use_apex:
 else:
     SGD = optim.SGD
 
-gaze_lr = 1.0 * args.base_lr
+gaze_lr = 0.1 * args.base_lr
 if args.backprop_gaze_to_encoder:
     optimizer = SGD(
         [
