@@ -123,12 +123,11 @@ class DTED(nn.Module):
 
         std = torch.exp(logvar / 2)
         epsilon = torch.randn_like(std)
-        print(epsilon)
         z = epsilon * std + mean
         return z  # ([64, 118])
 
     ##########################
-    def encode_to_z(self, z):
+    def encode_to_codes(self, z):
 
         # Create latent codes
         z_shape = z.dim()
@@ -172,9 +171,9 @@ class DTED(nn.Module):
         z = self.reparameterize(mu, logvar)
 
         # change shape of z
-        (z_a_a, ze1_g_a, ze1_h_a, z_shape) = self.encode_to_z(z)
+        (z_a_a, ze1_g_a, ze1_h_a, z_shape) = self.encode_to_codes(z)
         if not is_inference_time:
-            z_a_b, ze1_g_b, ze1_h_b, _ = self.encode_to_z(z)
+            z_a_b, ze1_g_b, ze1_h_b, _ = self.encode_to_codes(z)
 
         # Make each row a unit vector through L2 normalization to constrain
         # embeddings to the surface of a hypersphere
@@ -244,7 +243,7 @@ class DTED(nn.Module):
         return output_dict
 
 
-######change encoder to pretrained  Resnet18############# # input shape   [64，3，64，256]
+######change encoder to pretrained  Resnet18 densenet121############# # input shape   [64，3，64，256]
 class DenseNetEncoder(nn.Module):
 
     def __init__(self):
