@@ -252,8 +252,8 @@ class DenseNetEncoder(nn.Module):
         #self.model = densenet121(pretrained=True)
         self.model = torch.nn.Sequential(*list(self.model.children())[:-1])
         #self.fc = nn.Linear(1000, 512)
-        #for param in self.model.parameters():
-           # param.requires_grad = False
+        for param in self.model.parameters():
+            param.requires_grad = True
 
     def forward(self, x):
         x = torch.nn.functional.interpolate(x, size=(224, 224), mode='bilinear', align_corners=False)
